@@ -63,7 +63,7 @@ class Collisions implements Context
 		
 		function executeMovement() : Void
 		{
-			FlxTimer.start(snake.speed / FlxG.framerate, function(t) {
+			FlxTimer.start(snake.speed / FlxG.updateFramerate, function(t) {
 				new Movement(self).move();
 			});			
 		}

@@ -10,10 +10,9 @@ import flixel.util.FlxTimer;
 
 class Movement implements Context
 {
-	@role var snake = 
-	{
-		var roleInterface : Snake;
-	}
+	@role var snake : Snake;
+	
+	@role var tail : FlxSprite;
 	
 	@role var head = 
 	{
@@ -63,9 +62,7 @@ class Movement implements Context
 			screen.testCollisionsOnNextFrame();
 		}
 	}
-	
-	@role var tail : FlxSprite;
-	
+		
 	@role var screen = 
 	{ 
 		var roleInterface : Screen;
@@ -73,7 +70,7 @@ class Movement implements Context
 		function testCollisionsOnNextFrame() : Void
 		{
 			// Wait 1 frame to allow sprites to change position
-			FlxTimer.start(1 / FlxG.framerate, function(t) {
+			FlxTimer.start(1 / FlxG.updateFramerate, function(t) {
 				new Collisions(screen).test();
 			});
 		}
@@ -99,7 +96,7 @@ class Movement implements Context
 	{
 		if (!snake.alive)
 		{
-			if (FlxG.keyboard.anyJustReleased(["SPACE", "R"]))
+			if (FlxG.keys.anyJustReleased(["SPACE", "R"]))
 				FlxG.resetState();
 
 			return;
@@ -117,19 +114,19 @@ class Movement implements Context
 		else if (head.y < firstBody.y) backwardDir = FlxObject.DOWN;
 		
 		// WASD / arrow keys to control the snake
-		if (FlxG.keyboard.anyPressed(["UP", "W"]) && backwardDir != FlxObject.UP)
+		if (FlxG.keys.anyPressed(["UP", "W"]) && backwardDir != FlxObject.UP)
 		{
 			snake.facing = FlxObject.UP;
 		}
-		else if (FlxG.keyboard.anyPressed(["DOWN", "S"]) && backwardDir != FlxObject.DOWN)
+		else if (FlxG.keys.anyPressed(["DOWN", "S"]) && backwardDir != FlxObject.DOWN)
 		{
 			snake.facing = FlxObject.DOWN;
 		}
-		else if (FlxG.keyboard.anyPressed(["LEFT", "A"]) && backwardDir != FlxObject.LEFT)
+		else if (FlxG.keys.anyPressed(["LEFT", "A"]) && backwardDir != FlxObject.LEFT)
 		{
 			snake.facing = FlxObject.LEFT;
 		}
-		else if (FlxG.keyboard.anyPressed(["RIGHT", "D"]) && backwardDir != FlxObject.RIGHT)
+		else if (FlxG.keys.anyPressed(["RIGHT", "D"]) && backwardDir != FlxObject.RIGHT)
 		{
 			snake.facing = FlxObject.RIGHT;
 		}		

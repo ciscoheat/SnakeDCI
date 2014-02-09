@@ -19,7 +19,7 @@ class Score extends FlxText
 		
 		// Fading effect
 		this.alpha = 0;		
-		FlxTimer.start(1 / FlxG.framerate, function(t) {
+		FlxTimer.start(1 / FlxG.updateFramerate, function(t) {
 			this.alpha += 0.1;
 		}, 10);
 	}

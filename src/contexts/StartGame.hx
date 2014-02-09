@@ -23,7 +23,7 @@ class StartGame implements haxedci.Context
 		
 		function executeMovement()
 		{
-			FlxTimer.start(snake.speed / FlxG.framerate, function(t) {
+			FlxTimer.start(snake.speed / FlxG.updateFramerate, function(t) {
 				new Movement(self).move();
 			});
 		}

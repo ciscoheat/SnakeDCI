@@ -2,6 +2,8 @@
 
 This repository is a supplement to the [haxedci](https://github.com/ciscoheat/haxedci) Haxe library. It shows the power of DCI in a larger example than the basic [Money Transfer](https://github.com/ciscoheat/haxedci-example), by creating the classic Snake game in Haxe using DCI and the Haxeflixel game library.
 
+The most important aspect of SnakeDCI is to show how well DCI maps to [Use Cases](http://en.wikipedia.org/wiki/Use_case). You should refer to [Use cases.md](https://github.com/ciscoheat/SnakeDCI/blob/master/Use%20cases.md) when looking at the [Context classes](https://github.com/ciscoheat/SnakeDCI/tree/master/src/contexts). Note how the source code reflects the specification.
+
 ## How to use
 Clone this repository or download it, then open the [FlashDevelop](http://www.flashdevelop.org/) project file, or execute run.bat to build and run.
 

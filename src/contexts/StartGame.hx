@@ -11,6 +11,21 @@ import flixel.util.FlxTimer;
 
 class StartGame implements haxedci.Context
 {
+	public function new(screen : Screen) 
+	{		
+		this.screen = screen;
+		this.snake = screen.snake;
+		this.fruit = screen.fruit;
+		this.score = screen.score;
+	}	
+		
+	public function start()
+	{
+		screen.clearScreen();
+	}
+	
+	///// Roles /////
+	
 	@role var screen = 
 	{
 		var roleInterface : Screen;
@@ -75,18 +90,5 @@ class StartGame implements haxedci.Context
 			
 			snake.create();
 		}
-	}
-	
-	public function new(screen : Screen) 
-	{		
-		this.screen = screen;
-		this.snake = screen.snake;
-		this.fruit = screen.fruit;
-		this.score = screen.score;
-	}	
-		
-	public function start()
-	{
-		screen.clearScreen();
 	}
 }

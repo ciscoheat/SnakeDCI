@@ -10,6 +10,26 @@ import flixel.util.FlxTimer;
 
 class Collisions implements Context
 {
+	public function new(screen : Screen)
+	{
+		this.screen = screen;
+		this.snake = screen.snake;
+		this.fruit = screen.fruit;
+		this.score = screen.score;
+	}
+	
+	public function test() : Void
+	{
+		if (snake.collidedWithItself())
+			screen.displayGameOver();
+		else if (snake.movedToFruit())
+			fruit.disappear();
+		else
+			screen.executeMovement();
+	}
+	
+	///// Roles /////
+	
 	@role var snake =
 	{
 		var roleInterface : Snake;
@@ -84,23 +104,5 @@ class Collisions implements Context
 			self.add(10);
 			snake.addSegment();
 		}
-	}
-
-	public function new(screen : Screen)
-	{
-		this.screen = screen;
-		this.snake = screen.snake;
-		this.fruit = screen.fruit;
-		this.score = screen.score;
-	}
-	
-	public function test() : Void
-	{
-		if (snake.collidedWithItself())
-			screen.displayGameOver();
-		else if (snake.movedToFruit())
-			fruit.disappear();
-		else
-			screen.executeMovement();
 	}
 }

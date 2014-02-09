@@ -10,6 +10,67 @@ import flixel.util.FlxTimer;
 
 class Movement implements Context
 {
+	public function new(screen : Screen) 
+	{
+		var snake = screen.snake;
+		
+		this.screen = screen;
+		this.snake = snake;
+		this.head = snake.members[0];
+		this.body = snake.members.slice(1);
+		this.tail = this.body[this.body.length - 1];
+	}
+	
+	public function move()
+	{
+		head.moveInFacingDirection();
+	}
+	
+	public function testMovement()
+	{
+		// A bit larger system operation, could be factorized.
+		// Based on system rules instead of a use case.
+		
+		if (!snake.alive)
+		{
+			if (FlxG.keys.anyJustReleased(["SPACE", "R"]))
+				FlxG.resetState();
+
+			return;
+		}
+		
+		// Determine illegal backward move direction
+		// cannot use facing since it is possible to switch facing multiple times 
+		// between movement frames.
+		var firstBody = body[0];		
+		var backwardDir = 0;
+		
+		if (head.x > firstBody.x)      backwardDir = FlxObject.LEFT;
+		else if (head.x < firstBody.x) backwardDir = FlxObject.RIGHT;
+		else if (head.y > firstBody.y) backwardDir = FlxObject.UP;
+		else if (head.y < firstBody.y) backwardDir = FlxObject.DOWN;
+		
+		// WASD / arrow keys to control the snake
+		if (FlxG.keys.anyPressed(["UP", "W"]) && backwardDir != FlxObject.UP)
+		{
+			snake.facing = FlxObject.UP;
+		}
+		else if (FlxG.keys.anyPressed(["DOWN", "S"]) && backwardDir != FlxObject.DOWN)
+		{
+			snake.facing = FlxObject.DOWN;
+		}
+		else if (FlxG.keys.anyPressed(["LEFT", "A"]) && backwardDir != FlxObject.LEFT)
+		{
+			snake.facing = FlxObject.LEFT;
+		}
+		else if (FlxG.keys.anyPressed(["RIGHT", "D"]) && backwardDir != FlxObject.RIGHT)
+		{
+			snake.facing = FlxObject.RIGHT;
+		}		
+	}
+
+	///// Roles /////
+	
 	@role var snake : Snake;
 	
 	@role var tail : FlxSprite;
@@ -74,61 +135,5 @@ class Movement implements Context
 				new Collisions(screen).test();
 			});
 		}
-	}
-	
-	public function new(screen : Screen) 
-	{
-		var snake = screen.snake;
-		
-		this.screen = screen;
-		this.snake = snake;
-		this.head = snake.members[0];
-		this.body = snake.members.slice(1);
-		this.tail = this.body[this.body.length - 1];
-	}
-	
-	public function move()
-	{
-		head.moveInFacingDirection();
-	}
-	
-	public function testMovement()
-	{
-		if (!snake.alive)
-		{
-			if (FlxG.keys.anyJustReleased(["SPACE", "R"]))
-				FlxG.resetState();
-
-			return;
-		}
-		
-		// Determine illegal backward move direction
-		// cannot use facing since it is possible to switch facing multiple times 
-		// between movement frames.
-		var firstBody = body[0];		
-		var backwardDir = 0;
-		
-		if (head.x > firstBody.x)      backwardDir = FlxObject.LEFT;
-		else if (head.x < firstBody.x) backwardDir = FlxObject.RIGHT;
-		else if (head.y > firstBody.y) backwardDir = FlxObject.UP;
-		else if (head.y < firstBody.y) backwardDir = FlxObject.DOWN;
-		
-		// WASD / arrow keys to control the snake
-		if (FlxG.keys.anyPressed(["UP", "W"]) && backwardDir != FlxObject.UP)
-		{
-			snake.facing = FlxObject.UP;
-		}
-		else if (FlxG.keys.anyPressed(["DOWN", "S"]) && backwardDir != FlxObject.DOWN)
-		{
-			snake.facing = FlxObject.DOWN;
-		}
-		else if (FlxG.keys.anyPressed(["LEFT", "A"]) && backwardDir != FlxObject.LEFT)
-		{
-			snake.facing = FlxObject.LEFT;
-		}
-		else if (FlxG.keys.anyPressed(["RIGHT", "D"]) && backwardDir != FlxObject.RIGHT)
-		{
-			snake.facing = FlxObject.RIGHT;
-		}		
 	}
 }

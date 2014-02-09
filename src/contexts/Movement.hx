@@ -1,7 +1,7 @@
 package contexts;
 import data.Screen;
 import data.Snake;
-import dci.Context;
+import haxedci.Context;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;

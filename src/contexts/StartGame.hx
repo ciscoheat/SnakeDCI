@@ -9,7 +9,7 @@ import flixel.FlxObject;
 import flixel.util.FlxRandom;
 import flixel.util.FlxTimer;
 
-class StartGame implements dci.Context
+class StartGame implements haxedci.Context
 {
 	@role var screen = 
 	{

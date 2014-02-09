@@ -12,6 +12,8 @@ You also need to execute the following haxelib commands in a command prompt to r
 **haxelib install haxedci** <br>
 **haxelib install flixel**
 
+(If you already have the above libraries installed, make sure you update them to the latest version.)
+
 ## What is DCI?
 DCI stands for Data, Context, Interaction. One of the key aspects of DCI is to separate what a system *is* (data) from what it *does* (function). Data and function has very different rates of change so they should be separated, not as it currently is, put in classes together. But DCI is so much more, so please explore the resources below. If you are familiar with Haxe already, the [haxedci-example](https://github.com/ciscoheat/haxedci-example) is a good start.
 

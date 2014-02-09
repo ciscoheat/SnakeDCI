@@ -3,7 +3,7 @@ import data.Fruit;
 import data.Score;
 import data.Screen;
 import data.Snake;
-import dci.Context;
+import haxedci.Context;
 import flixel.FlxG;
 import flixel.util.FlxRandom;
 import flixel.util.FlxTimer;

@@ -1,6 +1,6 @@
 # SnakeDCI
 
-This repository is a supplement to the [haxedci](https://github.com/ciscoheat/haxedci) library for [Haxe](http://haxe.org). It shows the power of DCI in a larger example than the basic [Money Transfer](https://github.com/ciscoheat/haxedci-example), by creating the classic Snake game in Haxe using DCI and the [Haxeflixel](http://haxeflixel.com/) game library.
+This repository is a supplement to the [haxedci](https://github.com/ciscoheat/haxedci) library for [Haxe](http://haxe.org). It shows the power of DCI in a larger example than the basic [Money Transfer](https://github.com/ciscoheat/haxedci-example), by creating the classic Snake game in Haxe using DCI and the [HaxeFlixel](http://haxeflixel.com/) game library.
 
 The most important aspect of SnakeDCI is to show how well DCI maps to [Use Cases](http://en.wikipedia.org/wiki/Use_case). You should refer to [Use cases.md](https://github.com/ciscoheat/SnakeDCI/blob/master/Use%20cases.md) when looking at the [Context classes](https://github.com/ciscoheat/SnakeDCI/tree/master/src/contexts). Note how the source code reflects the specification.
 
@@ -24,3 +24,6 @@ Support - [stackoverflow](http://stackoverflow.com/questions/tagged/dci), taggin
 Discussions - [Object-composition](https://groups.google.com/forum/?fromgroups#!forum/object-composition) <br>
 Wikipedia - [DCI entry](http://en.wikipedia.org/wiki/Data,_Context,_and_Interaction) <br>
 Haxe/DCI tutorial - [haxedci-example](https://github.com/ciscoheat/haxedci-example)
+
+## Credits
+Game based on [FlxSnake](from https://github.com/HaxeFlixel/flixel-demos/tree/dev/Arcade%20Classics/FlxSnake) in the HaxeFlixel demos. Thanks!

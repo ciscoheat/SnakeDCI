@@ -8,8 +8,9 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.util.FlxRandom;
 import flixel.util.FlxTimer;
+import haxedci.Context;
 
-class StartGame implements haxedci.Context
+class StartGame implements Context
 {
 	public function new(screen : Screen) 
 	{		
@@ -21,7 +22,7 @@ class StartGame implements haxedci.Context
 		
 	public function start()
 	{
-		screen.clearScreen();
+		screen.clear();
 	}
 	
 	///// Roles /////
@@ -30,17 +31,17 @@ class StartGame implements haxedci.Context
 	{
 		var roleInterface : Screen;
 		
-		function clearScreen()
+		function clear()
 		{
-			self.clear();
-			score.clear();
+			for (object in self.members)
+				object.destroy();
+			
+			score.setToZero();
 		}
 		
 		function executeMovement()
 		{
-			FlxTimer.start(snake.speed / FlxG.updateFramerate, function(t) {
-				new Movement(self).move();
-			});
+			new Movement(self).move();
 		}
 	}
 	
@@ -83,7 +84,7 @@ class StartGame implements haxedci.Context
 	{
 		var roleInterface : Score;
 		
-		function clear()
+		function setToZero()
 		{
 			screen.add(self);			
 			self.set(0);

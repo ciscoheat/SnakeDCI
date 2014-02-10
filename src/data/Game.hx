@@ -1,5 +1,6 @@
 package data;
 import flash.Lib;
+import flixel.FlxG;
 import flixel.FlxGame;
 
 class Game extends FlxGame
@@ -15,5 +16,7 @@ class Game extends FlxGame
 		var fps = 60;
 		
 		super(Math.ceil(stageWidth / ratio), Math.ceil(stageHeight / ratio), Screen, ratio, fps, fps);
+		
+		FlxG.mouse.visible = false;
 	}	
 }

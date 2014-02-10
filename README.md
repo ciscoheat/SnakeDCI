@@ -26,4 +26,4 @@ Wikipedia - [DCI entry](http://en.wikipedia.org/wiki/Data,_Context,_and_Interact
 Haxe/DCI tutorial - [haxedci-example](https://github.com/ciscoheat/haxedci-example)
 
 ## Credits
-Game based on [FlxSnake](from https://github.com/HaxeFlixel/flixel-demos/tree/dev/Arcade%20Classics/FlxSnake) in the HaxeFlixel demos. Thanks!
+Game based on [FlxSnake](https://github.com/HaxeFlixel/flixel-demos/tree/dev/Arcade%20Classics/FlxSnake) from the HaxeFlixel demos. Thanks!

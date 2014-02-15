@@ -17,6 +17,8 @@
 	<haxelib name="openfl" />
 	<haxelib name="flixel" />
 	<haxelib name="haxedci" />
+
+	<!-- haxeflag name="-D dcigraphs" / -->
 	
 	<!-- optimize output
 	<haxeflag name="-dce full" /> -->

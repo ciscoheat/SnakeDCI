@@ -37,5 +37,5 @@
 4. A segment is added to the end of the Snake
 5. A Fruit is placed on an empty random space of the Screen
 6. Snake increases its movement speed according to [Rules: Movement control]
-7. [Movement] phase is executed
+7. [Movement] is executed
 </pre>

@@ -11,7 +11,7 @@
 
 ## Rules: Movement control
 <pre>
-1. Snake moves a step every 7:th frame, decreasing 0.25 for every fruit eaten
+1. Snake moves a step every 7:th frame, decreasing 0.25 for every fruit eaten until it reaches 2
 2. Using the arrow keys, the Player determines what direction the Snake faces
 3. If Player makes the Snake face 180 degrees from its current facing, facing doesn't change
 </pre>
@@ -37,7 +37,5 @@
 4. A segment is added to the end of the Snake
 5. A Fruit is placed on an empty random space of the Screen
 6. Snake increases its movement speed according to [Rules: Movement control]
-6a.    Snake is moving every 2:nd frame
-6a1.       [Movement] phase is executed
 7. [Movement] phase is executed
 </pre>

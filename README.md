@@ -7,11 +7,17 @@ The most important aspect of SnakeDCI is to show how well DCI maps to [Use Cases
 ## How to use
 First of course, download and install [Haxe](http://haxe.org). Then clone this repository or download it, and open the [FlashDevelop](http://www.flashdevelop.org/) project file, or execute run.bat to build and run.
 
-You also need to execute the following haxelib commands in a command prompt to run SnakeDCI, in the following order:
+You also need to install the following haxelib libraries in a command prompt to run SnakeDCI:
 
 **haxelib install haxedci** <br>
 **haxelib install flixel** <br>
 **haxelib install lime-tools**
+
+And depending on what platform you want to run it on, one or more of:
+
+**haxelib install openfl-native** <br>
+**haxelib install nme** <br>
+**haxelib install hxcpp**
 
 (If you already have the above libraries installed, make sure you update them to the latest version.)
 

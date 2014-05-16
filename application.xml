@@ -23,4 +23,7 @@
 	<!-- optimize output
 	<haxeflag name="-dce full" /> -->
 	
+	<!-- To prevent gamepad error. https://github.com/HaxeFlixel/flixel/issues/901 -->
+	<set name="SWF_VERSION" value="11.8" />
+	
 </project>

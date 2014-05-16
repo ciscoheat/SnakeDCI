@@ -131,7 +131,7 @@ class Movement implements Context
 		function testCollisionsOnNextFrame() : Void
 		{
 			// Wait 1 frame to allow sprites to change position
-			FlxTimer.start(1 / FlxG.updateFramerate, function(t) {
+			new FlxTimer(1 / FlxG.updateFramerate, function(_) {
 				new Collisions(screen).test();
 			});
 		}

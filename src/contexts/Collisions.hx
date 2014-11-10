@@ -17,7 +17,7 @@ class Collisions implements Context
 		this.fruit = screen.fruit;
 		this.score = screen.score;
 	}
-	
+
 	public function test() : Void
 	{
 		if (snake.collidedWithItself())
@@ -27,14 +27,12 @@ class Collisions implements Context
 		else
 			screen.executeMovement();
 	}
-	
+
 	///// Roles /////
-	
-	@role var snake =
+
+	@role var snake : Snake =
 	{
-		var roleInterface : Snake;
-		
-		function movedToFruit() return FlxG.overlap(snake, fruit);		
+		function movedToFruit() return FlxG.overlap(snake, fruit);
 		function collidedWithItself() return FlxG.overlap(self);
 		function movingEvery2ndFrame() return self.speed == 2;
 
@@ -43,30 +41,28 @@ class Collisions implements Context
 			self.grow();
 			fruit.add();
 		}
-		
+
 		function increaseSpeed() : Void
 		{
 			if (!self.movingEvery2ndFrame())
 				self.speed -= 0.25;
 
-			screen.executeMovement();			
-		}		
+			screen.executeMovement();
+		}
 	}
 
-	@role var fruit =
+	@role var fruit : Fruit =
 	{
-		var roleInterface : Fruit;
-		
 		function disappear() : Void
 		{
 			self.kill();
 			score.increase();
 		}
-		
+
 		function add() : Void
 		{
 			self.reset(0, 0);
-			
+
 			do {
 				// Pick a random place to put the fruit down
 				self.x = FlxRandom.intRanged(0, Math.floor(FlxG.width / screen.blockSize) - 1) * screen.blockSize;
@@ -77,17 +73,15 @@ class Collisions implements Context
 		}
 	}
 
-	@role var screen =
+	@role var screen : Screen =
 	{
-		var roleInterface : Screen;
-		
 		function executeMovement() : Void
 		{
 			new FlxTimer(snake.speed / FlxG.updateFramerate, function(_) {
 				new Movement(self).move();
 			});
 		}
-		
+
 		function displayGameOver() : Void
 		{
 			score.text = "Game Over - Space to restart!";
@@ -95,10 +89,8 @@ class Collisions implements Context
 		}
 	}
 
-	@role var score =
+	@role var score : Score =
 	{
-		var roleInterface : Score;
-		
 		function increase() : Void
 		{
 			self.add(10);

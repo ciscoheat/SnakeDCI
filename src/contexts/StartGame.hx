@@ -12,16 +12,14 @@ import haxedci.Context;
 
 class StartGame implements Context
 {
-	public function new(screen : Screen)
-	{
+	public function new(screen : Screen) {
 		this.screen = screen;
 		this.snake = screen.snake;
 		this.fruit = screen.fruit;
 		this.score = screen.score;
 	}
 
-	public function start()
-	{
+	public function start() {
 		screen.clear();
 	}
 
@@ -29,24 +27,21 @@ class StartGame implements Context
 
 	@role var screen : Screen =
 	{
-		function clear()
-		{
+		function clear() {
 			for (object in self.members)
 				object.destroy();
 
 			score.setToZero();
 		}
 
-		function executeMovement()
-		{
+		function executeMovement() {
 			new Movement(self).move();
 		}
 	}
 
 	@role var snake : Snake =
 	{
-		function create() : Void
-		{
+		function create() : Void {
 			screen.add(self);
 
 			self.setPosition(screen.middleX(), screen.middleY());
@@ -60,8 +55,7 @@ class StartGame implements Context
 
 	@role var fruit : Fruit =
 	{
-		function create() : Void
-		{
+		function create() : Void {
 			screen.add(self);
 
 			do {
@@ -76,8 +70,7 @@ class StartGame implements Context
 
 	@role var score : Score =
 	{
-		function setToZero()
-		{
+		function setToZero() {
 			screen.add(self);
 			self.set(0);
 

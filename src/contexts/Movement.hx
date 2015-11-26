@@ -10,8 +10,7 @@ import flixel.util.FlxTimer;
 
 class Movement implements Context
 {
-	public function new(screen : Screen)
-	{
+	public function new(screen : Screen) {
 		var snake = screen.snake;
 
 		this.screen = screen;
@@ -21,18 +20,15 @@ class Movement implements Context
 		this.tail = this.body[this.body.length - 1];
 	}
 
-	public function move()
-	{
+	public function move() {
 		head.moveInFacingDirection();
 	}
 
-	public function testMovement()
-	{
+	public function testMovement() {
 		// A bit larger system operation, could be factorized.
 		// Based on system rules instead of a use case.
 
-		if (!snake.alive)
-		{
+		if (!snake.alive) {
 			if (FlxG.keys.anyJustReleased(["SPACE", "R"]))
 				FlxG.resetState();
 
@@ -51,20 +47,16 @@ class Movement implements Context
 		else if (head.y < firstBody.y) backwardDir = FlxObject.DOWN;
 
 		// WASD / arrow keys to control the snake
-		if (FlxG.keys.anyPressed(["UP", "W"]) && backwardDir != FlxObject.UP)
-		{
+		if (FlxG.keys.anyPressed(["UP", "W"]) && backwardDir != FlxObject.UP) {
 			snake.facing = FlxObject.UP;
 		}
-		else if (FlxG.keys.anyPressed(["DOWN", "S"]) && backwardDir != FlxObject.DOWN)
-		{
+		else if (FlxG.keys.anyPressed(["DOWN", "S"]) && backwardDir != FlxObject.DOWN) {
 			snake.facing = FlxObject.DOWN;
 		}
-		else if (FlxG.keys.anyPressed(["LEFT", "A"]) && backwardDir != FlxObject.LEFT)
-		{
+		else if (FlxG.keys.anyPressed(["LEFT", "A"]) && backwardDir != FlxObject.LEFT) {
 			snake.facing = FlxObject.LEFT;
 		}
-		else if (FlxG.keys.anyPressed(["RIGHT", "D"]) && backwardDir != FlxObject.RIGHT)
-		{
+		else if (FlxG.keys.anyPressed(["RIGHT", "D"]) && backwardDir != FlxObject.RIGHT) {
 			snake.facing = FlxObject.RIGHT;
 		}
 	}
@@ -77,8 +69,7 @@ class Movement implements Context
 
 	@role var head : FlxSprite =
 	{
-		function moveInFacingDirection() : Void
-		{
+		function moveInFacingDirection() : Void {
 			var x = self.x;
 			var y = self.y;
 			var oldX = x;
@@ -103,10 +94,8 @@ class Movement implements Context
 
 	@role var body : Array<FlxSprite> =
 	{
-		function moveToFrontPosition(x : Float, y : Float) : Void
-		{
-			for (segment in body)
-			{
+		function moveToFrontPosition(x : Float, y : Float) : Void {
+			for (segment in body) {
 				var oldX = segment.x;
 				var oldY = segment.y;
 
@@ -122,8 +111,7 @@ class Movement implements Context
 
 	@role var screen : Screen =
 	{
-		function testCollisionsOnNextFrame() : Void
-		{
+		function testCollisionsOnNextFrame() : Void {
 			// Wait 1 frame to allow sprites to change position
 			new FlxTimer(1 / FlxG.updateFramerate, function(_) {
 				new Collisions(screen).test();

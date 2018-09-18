@@ -2,15 +2,15 @@
 
 This repository is a supplement to the [haxedci](https://github.com/ciscoheat/haxedci) library for [Haxe](http://haxe.org). It shows the power of DCI in a larger example, by creating the classic Snake game in Haxe using DCI and the [Phaser](https://phaser.io/) game library.
 
-The most important aspect of SnakeDCI is to show how well DCI maps to [Use Cases](http://en.wikipedia.org/wiki/Use_case). You should refer to [this spreadsheet](https://docs.google.com/spreadsheets/d/1TkDFiUyfZyjQWsxLUponRIe8s0_4fABm-SJ7IjBkKKA/edit#gid=2) when looking at the [Context classes](https://github.com/ciscoheat/SnakeDCI/tree/master/src/contexts). Note how the source code reflects the specification.
+If you want to see the result straight away, [it's available online here](https://ciscoheat.github.io/snakedci/). Use the cursor keys to control the snake.
+
+The most important aspect of SnakeDCI however, is not to show a simple game, it's to show how well DCI maps to [Use Cases](http://en.wikipedia.org/wiki/Use_case). You should refer to [this spreadsheet](https://docs.google.com/spreadsheets/d/1TkDFiUyfZyjQWsxLUponRIe8s0_4fABm-SJ7IjBkKKA/edit#gid=2) when looking at the [Context classes](https://github.com/ciscoheat/SnakeDCI/tree/master/src/contexts). Note how the source code reflects the specification.
 
 ## How to use
 
-You will need [Haxe 4](https://haxe.org/download/version/4.0.0-preview.4/) and optionally [Node.js](https://nodejs.org/). After cloning or downloading this repository, use `haxe build.hxml` (or even better, [VS Code](https://code.visualstudio.com/)) to compile, then open `bin/index.html` to start the game. 
+You will need [Haxe 4](https://haxe.org/download/version/4.0.0-preview.4/) and [Node.js](https://nodejs.org/). After cloning or downloading this repository, install some build tools with `npm run tools`, then use `npm start` for automatic reloading when recompiling.
 
-### Using Node.js
-
-First install some build tools with `npm run tools`, then use `npm start` for automatic reloading when recompiling.
+Use `haxe build.hxml` for compiling, or even better, [VS Code](https://code.visualstudio.com/).
 
 ## What is DCI?
 

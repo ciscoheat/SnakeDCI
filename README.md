@@ -6,7 +6,11 @@ The most important aspect of SnakeDCI is to show how well DCI maps to [Use Cases
 
 ## How to use
 
-You will need [Haxe 4](https://haxe.org/download/version/4.0.0-preview.4/) and optionally [Node.js](https://nodejs.org/). After cloning or downloading this repository, use `haxe build.hxml` (or even better, [VS Code](https://code.visualstudio.com/)) to compile, and `npm start` for automatic reloading when compiling.
+You will need [Haxe 4](https://haxe.org/download/version/4.0.0-preview.4/) and optionally [Node.js](https://nodejs.org/). After cloning or downloading this repository, use `haxe build.hxml` (or even better, [VS Code](https://code.visualstudio.com/)) to compile, then open `bin/index.html` to start the game. 
+
+### Using Node.js
+
+First install some build tools with `npm run tools`, then use `npm start` for automatic reloading when recompiling.
 
 ## What is DCI?
 

@@ -2,7 +2,7 @@
 <html lang="en"> 
 <head> 
 	<meta charset="UTF-8" />
-	<title>Phäser - Making your first game</title>
+	<title>SnakeDCI</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser-ce/2.7.8/phaser.min.js"></script>
     <style type="text/css">
         body {
@@ -15,8 +15,9 @@
 
 <script src="game.js"></script>
 <script>
-    document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
-        ':35729/livereload.js?snipver=1"></' + 'script>')
+    if (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "")
+        document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
+            ':35729/livereload.js?snipver=1"></' + 'script>')
 </script>
 </body>
 </html>

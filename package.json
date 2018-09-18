@@ -11,5 +11,6 @@
   },
   "author": "ciscoheat",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "dependencies": {}
 }

@@ -1,121 +1,178 @@
 package contexts;
-import data.Screen;
-import data.Snake;
-import haxedci.Context;
-import flixel.FlxG;
-import flixel.FlxObject;
-import flixel.FlxSprite;
-import flixel.util.FlxSpriteUtil;
-import flixel.util.FlxTimer;
 
-class Movement implements Context
-{
-	public function new(screen : Screen) {
-		var snake = screen.snake;
+import phaser.Timer;
+import phaser.Phaser;
 
-		this.screen = screen;
-		this.snake = snake;
-		this.head = snake.members[0];
-		this.body = snake.members.slice(1);
-		this.tail = this.body[this.body.length - 1];
-	}
+private typedef Segment = {
+    var x : Float;
+    var y : Float;
+}
 
-	public function move() {
-		head.moveInFacingDirection();
-	}
+class Movement implements dci.Context {
+    public function new(game : SnakeGame, segments, keyboard, fieldSize) {
+        this.SEGMENTS = segments;
+        this.HEAD = cast segments.getAt(0);
+        this.KEYBOARD = keyboard;
 
-	public function testMovement() {
-		// A bit larger system operation, could be factorized.
-		// Based on system rules instead of a use case.
+        if(segments.length < 2) throw "SEGMENTS length must be more than 1.";
 
-		if (!snake.alive) {
-			if (FlxG.keys.anyJustReleased(["SPACE", "R"]))
-				FlxG.resetState();
+        this._fieldSize = fieldSize;
+        this._game = game;
+        this._movementTimer = game.game.time.create(false);
 
-			return;
-		}
+        // Calculate movement direction based on first two segments.
+        // Can't be easily done anywhere else but in the constructor
+        // because of screen wrapping.
+        this._wantedDirection = this._currentDirection = {
+            var head : Segment = cast segments.getAt(0);
+            var body : Segment = cast segments.getAt(1);
 
-		// Determine illegal backward move direction
-		// cannot use facing since it is possible to switch facing multiple times
-		// between movement frames.
-		var firstBody = body[0];
-		var backwardDir = 0;
+            var diffY = Math.abs(body.y - head.y);
+            var diffX = Math.abs(body.x - head.x);
 
-		if (head.x > firstBody.x)      backwardDir = FlxObject.LEFT;
-		else if (head.x < firstBody.x) backwardDir = FlxObject.RIGHT;
-		else if (head.y > firstBody.y) backwardDir = FlxObject.UP;
-		else if (head.y < firstBody.y) backwardDir = FlxObject.DOWN;
+            if(diffY < diffX) {
+                if(body.x > head.x) Phaser.LEFT
+                else Phaser.RIGHT;
+            } else {
+                if(body.y > head.y) Phaser.UP
+                else Phaser.DOWN;
+            }
+        }
+    }
 
-		// WASD / arrow keys to control the snake
-		if (FlxG.keys.anyPressed(["UP", "W"]) && backwardDir != FlxObject.UP) {
-			snake.facing = FlxObject.UP;
-		}
-		else if (FlxG.keys.anyPressed(["DOWN", "S"]) && backwardDir != FlxObject.DOWN) {
-			snake.facing = FlxObject.DOWN;
-		}
-		else if (FlxG.keys.anyPressed(["LEFT", "A"]) && backwardDir != FlxObject.LEFT) {
-			snake.facing = FlxObject.LEFT;
-		}
-		else if (FlxG.keys.anyPressed(["RIGHT", "D"]) && backwardDir != FlxObject.RIGHT) {
-			snake.facing = FlxObject.RIGHT;
-		}
-	}
+    ///// System operations ///////////////////////////////////////
 
-	///// Roles /////
+    // Updates the wanted movement direction.
+    public function checkDirectionChange() {
+        KEYBOARD.updateDirection();
+    }
 
-	@role var snake : Snake;
+    public function start() {
+        _movementTimer.start();
 
-	@role var tail : FlxSprite;
+        (function moveEvent() {            
+            HEAD.move();
+            new Collisions(_game, this).checkCollisions();
+            _movementTimer.add(SEGMENTS.moveSpeed(), moveEvent);
+        })();
+    }
 
-	@role var head : FlxSprite =
-	{
-		function moveInFacingDirection() : Void {
-			var x = self.x;
-			var y = self.y;
-			var oldX = x;
-			var oldY = y;
+    public function stop() {
+        _movementTimer.stop();
+    }
 
-			switch(self.facing)
-			{
-				case FlxObject.LEFT:  x -= snake.segmentSize;
-				case FlxObject.RIGHT: x += snake.segmentSize;
-				case FlxObject.UP:    y -= snake.segmentSize;
-				case FlxObject.DOWN:  y += snake.segmentSize;
-			}
+    // Signal that the snake should grow on its next movement.
+    public function growOnNextMove() {
+        _growOnNextMove = true;
+    }
 
-			self.setPosition(x, y);
+    ///// Context state ///////////////////////////////////////////
 
-			// Adjust if Head moves out of screen.
-			FlxSpriteUtil.screenWrap(self);
+    final _fieldSize : {width: Float, height: Float};
+    final _game : SnakeGame;
+    final _movementTimer : Timer;
 
-			body.moveToFrontPosition(oldX, oldY);
-		}
-	}
+    var _wantedDirection : Float;
+    var _currentDirection : Float;
+    var _growOnNextMove : Bool = false;
 
-	@role var body : Array<FlxSprite> =
-	{
-		function moveToFrontPosition(x : Float, y : Float) : Void {
-			for (segment in body) {
-				var oldX = segment.x;
-				var oldY = segment.y;
+    ///// Helper methods //////////////////////////////////////////
 
-				segment.setPosition(x, y);
+    function dir2Text(dir : Float) return
+        if(dir == Phaser.UP) "UP"
+        else if(dir == Phaser.DOWN) "DOWN"
+        else if(dir == Phaser.LEFT) "LEFT"
+        else if(dir == Phaser.RIGHT) "RIGHT"
+        else "<NOWHERE>";
 
-				x = oldX;
-				y = oldY;
-			}
+    ///// Roles ///////////////////////////////////////////////////
 
-			screen.testCollisionsOnNextFrame();
-		}
-	}
+    @role var HEAD : {
+        var x : Float;
+        var y : Float;
+        var width : Float;
+        var height : Float;
 
-	@role var screen : Screen =
-	{
-		function testCollisionsOnNextFrame() : Void {
-			// Wait 1 frame to allow sprites to change position
-			new FlxTimer(1 / FlxG.updateFramerate, function(_) {
-				new Collisions(screen).test();
-			});
-		}
-	}
+        // Moves the snake one step ahead based on the wanted movement direction.
+        public function move() {
+            // Save current position, the next segment will move there.
+            var prevX = x, prevY = y;
+
+            // Change position of head
+            var moveDir = SELF.disallowOppositeDir();
+
+            if(moveDir == Phaser.UP) y -= height;
+            else if(moveDir == Phaser.DOWN) y += height;
+            else if(moveDir == Phaser.LEFT) x -= width;
+            else if(moveDir == Phaser.RIGHT) x += width;
+
+            _currentDirection = moveDir;
+
+            // Wrap around playfield
+            if(x >= _fieldSize.width) x = 0;
+            else if(x < 0) x = _fieldSize.width - width;
+            
+            if(y >= _fieldSize.height) y = 0;
+            else if(y < 0) y = _fieldSize.height - height;
+
+            SEGMENTS.moveTo(prevX, prevY);
+        }
+
+        // Disallow 180 degree turns
+        function disallowOppositeDir() {
+            return if(
+                (_wantedDirection == Phaser.RIGHT && _currentDirection == Phaser.LEFT) ||
+                (_wantedDirection == Phaser.LEFT && _currentDirection == Phaser.RIGHT) ||
+                (_wantedDirection == Phaser.UP && _currentDirection == Phaser.DOWN) ||
+                (_wantedDirection == Phaser.DOWN && _currentDirection == Phaser.UP)
+            ) _currentDirection else _wantedDirection;
+        }
+    }
+
+    @role var SEGMENTS : {
+        function getAt(index : Float) : haxe.extern.EitherType<pixi.DisplayObject, Float>;
+        function addSegment(x : Float, y : Float) : Void;
+        var length(default, null) : Float;
+
+        // Move all segments to the position in front, starting with x,y
+        public function moveTo(x : Float, y : Float) {
+            for(i in 1...Std.int(SELF.length)) {
+                var segment : Segment = cast SELF.getAt(i);
+                var prevX = segment.x, prevY = segment.y;
+
+                segment.x = x; segment.y = y;
+                x = prevX; y = prevY;
+            }
+
+            if(_growOnNextMove) {
+                SELF.addSegment(x, y);
+                _growOnNextMove = false;
+            }
+        }
+
+        // Snake movement speed, per ms
+        public function moveSpeed() {
+            return Math.max(150 - SELF.length * 3, 50);
+        }
+    }
+
+    @role var KEYBOARD : {
+        var left : {var isDown : Bool;};
+        var right : {var isDown : Bool;};
+        var up : {var isDown : Bool;};
+        var down : {var isDown : Bool;};
+
+        function direction() {
+            return if(left.isDown) Phaser.LEFT
+            else   if(right.isDown) Phaser.RIGHT
+            else   if(up.isDown) Phaser.UP
+            else   if(down.isDown) Phaser.DOWN
+            else   0;
+        }
+
+        public function updateDirection() {
+            var keyboardDir = SELF.direction();
+            if(keyboardDir != 0) _wantedDirection = keyboardDir;
+        }
+    }
 }

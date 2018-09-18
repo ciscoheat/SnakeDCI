@@ -1,0 +1,15 @@
+{
+  "name": "snakedci",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm-run-all -p server livereload",
+    "server": "http-server bin -c-1 -o",
+    "livereload": "livereload bin",
+    "tools": "npm install -g npm-run-all livereload http-server"
+  },
+  "author": "ciscoheat",
+  "license": "MIT",
+  "private": true
+}

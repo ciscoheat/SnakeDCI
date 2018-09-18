@@ -1,0 +1,9 @@
+-lib phaser
+-lib haxedci
+
+-debug
+-cp src
+-D analyzer-optimize
+
+-main SnakeGame
+-js bin/game.js

@@ -1,0 +1,10 @@
+-lib haxedci
+-lib buddy
+
+-debug
+-cp src
+-D analyzer-optimize
+-D nodejs
+
+-main StoreTests
+-js bin/store.js

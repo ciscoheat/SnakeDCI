@@ -41,49 +41,30 @@ class Store<T> {
         this.state = initialState;
     }
 
-    /*
-    static function main() {
-        var theStore = new Store({
-            score: 0,
-            name: { firstName: "Wall", lastName: "Enberg"}
-        });
-        //theStore.update(theStore.state.name);
-    }
-    */
-
     public function updateState(newState : T) : T {
         // TODO: Apply middleware
         return this.state = newState;
     }
 
     public function update<T2>(updatePath : String, newValue : T2) : T {
-        var trimRef = updatePath.indexOf(".state.");
-        if(trimRef > 0) updatePath = updatePath.substr(trimRef + 7);
-        // TODO: Disallow "state" path value
-        if(updatePath == "") throw "Use Store.updateState for updating the whole state.";
+        if(updatePath.length == 0) throw "Use Store.updateState for updating the whole state.";
         // TODO: Handle Dataclass (instad of state.copy)
-        var copy = state.copy();
-        deepCopyCurrentState(cast copy, updatePath, newValue);
-        return copy;
+        var copy = Reflect.copy(state);
+        deepStateCopy(cast copy, updatePath, newValue);
+        return updateState(copy);
     }
 
-    function deepCopyCurrentState(newState : haxe.DynamicAccess<Dynamic>, updatePath : StateTreeNode, newValue : Dynamic) : Void {
+    function deepStateCopy(newState : haxe.DynamicAccess<Dynamic>, updatePath : StateTreeNode, newValue : Dynamic) : Void {
         var nodeName = updatePath.name();
-        trace('Updating: $updatePath');
+        if(!newState.exists(nodeName)) throw "Key not found in state: " + updatePath;
+        //trace('Updating: $updatePath');
         if(!updatePath.hasNext()) {
-            trace('updating $nodeName and finishing.');
+            //trace('updating $nodeName and finishing.');
             newState.set(nodeName, newValue);
-        } else if(updatePath.isNextLeaf()) {
-            trace('Next path is a leaf. Copy, set and finish $nodeName');
-            var copy : haxe.DynamicAccess<Dynamic> = Reflect.copy(newState.get(nodeName));
-            var nextName = updatePath.next().name();
-            trace('Setting $nextName in $nodeName');
-            copy.set(nextName, newValue);
-            newState.set(nodeName, copy);
         } else {
             var copy = Reflect.copy(newState.get(nodeName));            
             newState.set(nodeName, copy);
-            deepCopyCurrentState(copy, updatePath.next(), newValue);
+            deepStateCopy(copy, updatePath.next(), newValue);
         }
     }
     #end

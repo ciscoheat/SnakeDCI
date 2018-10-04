@@ -1,4 +1,4 @@
-#if !macro
+import buddy.CompilationShould;
 using buddy.Should;
 
 typedef TestState = {
@@ -49,11 +49,16 @@ class StoreTests extends buddy.SingleSuite {
                         }
                     }
                 };
- 
+
+                CompilationShould.failFor(
+                    store.state = nextState
+                );
+
                 var newState = store.updateState(nextState);
 
+                newState.should.be(store.state);
+
                 newState.should.not.be(null);
-                //newState.should.not.be(nextState);
                 newState.score.should.be(1);
                 newState.person.name.firstName.should.be("Allan");
                 newState.person.name.lastName.should.be("Benberg");
@@ -64,6 +69,7 @@ class StoreTests extends buddy.SingleSuite {
                     firstName: "Allan", lastName: "Benberg"
                 });
 
+                newState.should.be(store.state);
                 newState.should.not.be(null);
                 newState.should.not.be(initialState);
                 newState.score.should.be(0);
@@ -74,16 +80,26 @@ class StoreTests extends buddy.SingleSuite {
             it("should update fields at the end of the state tree", {
                 var newState = store.update("person.name.firstName", "Wallan");
 
+                newState.should.be(store.state);
                 newState.should.not.be(null);
                 newState.should.not.be(initialState);
                 newState.score.should.be(0);
                 newState.person.name.firstName.should.be("Wallan");
                 newState.person.name.lastName.should.be("Enberg");
+                
+                CompilationShould.failFor(
+                    newState.person.name.firstName = "Ture"
+                );
+
+                CompilationShould.failFor(
+                    store.state.person.name.firstName = "Ture"
+                );
             });
 
-            it("should update fields at the end of the state tree", {
+            it("should update fields at the top of the state tree", {
                 var newState = store.update("score", 10);
 
+                newState.should.be(store.state);
                 newState.should.not.be(null);
                 newState.should.not.be(initialState);
                 newState.score.should.be(10);
@@ -91,24 +107,14 @@ class StoreTests extends buddy.SingleSuite {
                 newState.person.name.lastName.should.be("Enberg");
             });
 
+            it("should not allow empty string as field key", {
+                store.update.bind("", initialState).should.throwType(String);
+            });
 
-                /*
-                store.update(store.state, {
-                    score: 1, 
-                    name: {
-                        firstName: "Wall", lastName: "Enberg"
-                    }
-                });
-
-                store.update(store.state.score, 1);
-                
-                store.update(store.state.person.name, {
-                    firstName: "Wall", lastName: "Enberg"
-                });
-                
-                store.update(store.state.person.name.firstName, "Allan");
-                */
+            it("should throw if a field key doesn't exist in the state tree", {
+                store.update.bind("some", "test").should.throwType(String);
+                store.update.bind("some.missing.field", 10).should.throwType(String);
+            });
         });
     }
 }
-#end

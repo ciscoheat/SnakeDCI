@@ -33,16 +33,18 @@ class StoreBuilder {
         }
 
         function buildStateType(type : Type) switch type {
-            case TInst(t, [stateType]): switch stateType {
-                case TMono(t2) if(t2.get() == null):
-                    try {
-                        var arg = Context.getCallArguments()[0];
-                        var type = Context.typeof(arg);
-                        return buildStateType(type);
-                    } catch(e : Dynamic) {
-                        // TODO: Build type from argument
-                        return Context.error("Inferred typing not supported at the moment.", Context.currentPos());
-                    }
+            case TInst(t, _): 
+                return try {
+                    Context.warning("Building Store from instance", t.get().pos);
+                    trace(Context.getCallArguments());
+                    var arg = Context.getCallArguments()[0];
+                    var type = Context.typeof(arg);
+                    buildStateType(type);
+                } catch(e : Dynamic) {
+                    // TODO: Build type from argument
+                    Context.error("Inferred typing not supported at the moment.", Context.currentPos());
+                }
+                /*
                 case TType(t2, _): 
                     testFinalType("", t2.get().type);
                     return null;
@@ -50,7 +52,7 @@ class StoreBuilder {
 
                 case x:
                     return Context.error("Unsupported type: " + x, Context.currentPos());
-            }
+                */
 
             case TType(t, params):
                 if(params.length > 0) Context.error("Typedefs with parameters are not supported.", t.get().pos);
@@ -59,7 +61,7 @@ class StoreBuilder {
                 var complexType = Context.toComplexType(storeType);
                 trace(complexType);
                 testFinalType("", storeType);
-                return macro : Store<StoreTests.TestState>;
+                return null;
                 //Context.warning(t.get().name + " passed through test.", t.get().pos);
 
             case t:

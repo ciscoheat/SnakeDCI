@@ -33,17 +33,11 @@ class StoreBuilder {
         }
 
         function buildStateType(type : Type) switch type {
-            case TInst(t, _): 
-                return try {
-                    Context.warning("Building Store from instance", t.get().pos);
-                    trace(Context.getCallArguments());
-                    var arg = Context.getCallArguments()[0];
-                    var type = Context.typeof(arg);
-                    buildStateType(type);
-                } catch(e : Dynamic) {
-                    // TODO: Build type from argument
-                    Context.error("Inferred typing not supported at the moment.", Context.currentPos());
-                }
+            case TInst(t, params): 
+                Context.warning("Building Store from instance " + t + " with params " + params, t.get().pos);
+                var cls = t.get();
+                buildStateType(cls.superClass.params[0]);
+
                 /*
                 case TType(t2, _): 
                     testFinalType("", t2.get().type);
@@ -54,22 +48,21 @@ class StoreBuilder {
                     return Context.error("Unsupported type: " + x, Context.currentPos());
                 */
 
-            case TType(t, params):
-                if(params.length > 0) Context.error("Typedefs with parameters are not supported.", t.get().pos);
+            case TType(t, _):
+                trace(t); 
+                //if(params.length > 0) Context.error("Typedefs with parameters are not supported.", t.get().pos);
                 var realType : DefType = t.get();
                 var storeType = realType.type;
-                var complexType = Context.toComplexType(storeType);
-                trace(complexType);
-                testFinalType("", storeType);
-                return null;
-                //Context.warning(t.get().name + " passed through test.", t.get().pos);
+                //var complexType = Context.toComplexType(storeType);
+                testFinalType(realType.name, storeType);
 
             case t:
                 trace(t);
-                return Context.error("Class expected", Context.currentPos());
+                Context.error("Class expected", Context.currentPos());
         }
 
-        return buildStateType(Context.getLocalType());
+        buildStateType(Context.getLocalType());
+        return null;
     }
 }
 #end

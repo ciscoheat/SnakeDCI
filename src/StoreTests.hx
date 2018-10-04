@@ -9,6 +9,11 @@ typedef TestState = {
     }
 }
 
+class TestStateStore extends Store<TestState> {
+    public function new(initialState) super(initialState);
+}
+
+/*
 typedef TestState_Mutable = {
     var score : Int;
     var name : {
@@ -16,18 +21,19 @@ typedef TestState_Mutable = {
         var lastName : String;
     }
 }
+*/
 
 class StoreTests extends buddy.SingleSuite {
     public function new() {
         describe("The Store", {
-            var store : Store<TestState>;
+            var store : TestStateStore;
 
             beforeEach({
                 var initialState : TestState = {
                     score: 0,
                     name: { firstName: "Wall", lastName: "Enberg"}
                 };
-                store = new Store(initialState);
+                store = new TestStateStore(initialState);
             });
 
             it("should never return the previous state after a change", {

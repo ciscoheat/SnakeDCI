@@ -3,7 +3,7 @@ import haxe.macro.Expr;
 
 using haxe.macro.ExprTools;
 
-@:build(StoreBuilder.build())
+@:autoBuild(StoreBuilder.build())
 class Store<T> {
     #if !macro
     public var state(default, null) : T;

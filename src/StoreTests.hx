@@ -3,9 +3,11 @@ using buddy.Should;
 
 typedef TestState = {
     final score : Int;
-    final name : {
-        final firstName : String;
-        final lastName : String;
+    final person : {
+        final name : {
+            final firstName : String;
+            final lastName : String;
+        }
     }
 }
 
@@ -27,26 +29,70 @@ class StoreTests extends buddy.SingleSuite {
     public function new() {
         describe("The Store", {
             var store : TestStateStore;
+            var initialState : TestState = {
+                score: 0,
+                person: {
+                    name: { firstName: "Wall", lastName: "Enberg"}
+                }
+            };
 
             beforeEach({
-                var initialState : TestState = {
-                    score: 0,
-                    name: { firstName: "Wall", lastName: "Enberg"}
-                };
                 store = new TestStateStore(initialState);
             });
 
-            it("should never return the previous state after a change", {
-                /*
+            it("should replace the previous state when calling updateState", {
                 var nextState : TestState = {
                     score: 1, 
-                    name: {
-                        firstName: "Wall", lastName: "Enberg"
+                    person: {
+                        name: {
+                            firstName: "Allan", lastName: "Benberg"
+                        }
                     }
                 };
  
-                store.update(store.state, nextState);
+                var newState = store.updateState(nextState);
 
+                newState.should.not.be(null);
+                //newState.should.not.be(nextState);
+                newState.score.should.be(1);
+                newState.person.name.firstName.should.be("Allan");
+                newState.person.name.lastName.should.be("Benberg");
+            });
+
+            it("should update fields in the middle of the state tree", {
+                var newState = store.update("person.name", {
+                    firstName: "Allan", lastName: "Benberg"
+                });
+
+                newState.should.not.be(null);
+                newState.should.not.be(initialState);
+                newState.score.should.be(0);
+                newState.person.name.firstName.should.be("Allan");
+                newState.person.name.lastName.should.be("Benberg");
+            });
+
+            it("should update fields at the end of the state tree", {
+                var newState = store.update("person.name.firstName", "Wallan");
+
+                newState.should.not.be(null);
+                newState.should.not.be(initialState);
+                newState.score.should.be(0);
+                newState.person.name.firstName.should.be("Wallan");
+                newState.person.name.lastName.should.be("Enberg");
+            });
+
+            it("should update fields at the end of the state tree", {
+                var newState = store.update("score", 10);
+
+                newState.should.not.be(null);
+                newState.should.not.be(initialState);
+                newState.score.should.be(10);
+                newState.person.name.firstName.should.be("Wall");
+                newState.person.name.lastName.should.be("Enberg");
+            });
+
+
+                /*
                 store.update(store.state, {
                     score: 1, 
                     name: {
@@ -56,13 +102,12 @@ class StoreTests extends buddy.SingleSuite {
 
                 store.update(store.state.score, 1);
                 
-                store.update(store.state.name, {
+                store.update(store.state.person.name, {
                     firstName: "Wall", lastName: "Enberg"
                 });
                 
-                store.update(store.state.name.firstName, "Allan");
+                store.update(store.state.person.name.firstName, "Allan");
                 */
-            });
         });
     }
 }

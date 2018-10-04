@@ -34,7 +34,7 @@ class StoreBuilder {
 
         function buildStateType(type : Type) switch type {
             case TInst(t, params): 
-                Context.warning("Building Store from instance " + t + " with params " + params, t.get().pos);
+                //Context.warning("Building Store from instance " + t + " with params " + params, t.get().pos);
                 var cls = t.get();
                 buildStateType(cls.superClass.params[0]);
 
@@ -49,7 +49,7 @@ class StoreBuilder {
                 */
 
             case TType(t, _):
-                trace(t); 
+                //trace(t); 
                 //if(params.length > 0) Context.error("Typedefs with parameters are not supported.", t.get().pos);
                 var realType : DefType = t.get();
                 var storeType = realType.type;

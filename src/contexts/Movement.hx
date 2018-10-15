@@ -9,7 +9,7 @@ private typedef Segment = {
 }
 
 class Movement implements dci.Context {
-    public function new(game : SnakeGame, segments, keyboard, fieldSize) {
+    public function new(game : Main, segments, keyboard, fieldSize) {
         this.SEGMENTS = segments;
         this.HEAD = cast segments.getAt(0);
         this.KEYBOARD = keyboard;
@@ -69,7 +69,7 @@ class Movement implements dci.Context {
     ///// Context state ///////////////////////////////////////////
 
     final _fieldSize : {width: Float, height: Float};
-    final _game : SnakeGame;
+    final _game : Main;
     final _movementTimer : Timer;
 
     var _wantedDirection : Float;

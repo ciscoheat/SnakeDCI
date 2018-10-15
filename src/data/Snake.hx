@@ -1,8 +1,47 @@
 package data;
 
-import phaser.Group;
+class Snake implements dci.Context {
+    public function new(SEGMENTS, CURRENT_DIRECTION) {
+        this.SEGMENTS = SEGMENTS;
+        this.CURRENT_DIRECTION = CURRENT_DIRECTION;
+    }
 
-class Snake extends Group {
+    ///// System Operations /////////////////////////////////////////
+
+    public function start() {
+        SEGMENTS.interact();
+    }
+
+    ///// Context state /////////////////////////////////////////////
+
+    ///// Helper methods ////////////////////////////////////////////
+
+    ///// Roles /////////////////////////////////////////////////////
+
+    @role var SEGMENTS : {
+        var x : Float;
+        function doSomething() : Void;
+
+        public function interact() {
+            CURRENT_DIRECTION.test();
+        }
+    }
+
+    @role var CURRENT_DIRECTION : {
+        var x : Float;
+        function doSomething() : Void;
+
+        public function test() {
+            SELF.doSomething();
+        }
+    }
+
+
+
+}
+
+/*
+class Snake {
     var _textures : SnakeGame.Textures;
 
     public function new(game, textures) {
@@ -14,3 +53,4 @@ class Snake extends Group {
         this.create(x, y, this.length == 0 ? _textures.head : _textures.segment);
     }
 }
+*/

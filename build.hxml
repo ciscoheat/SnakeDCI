@@ -1,9 +1,10 @@
 -lib phaser
 -lib haxedci
+-lib deepstate
 
 -debug
 -cp src
 -D analyzer-optimize
 
--main SnakeGame
+-main Main
 -js bin/game.js

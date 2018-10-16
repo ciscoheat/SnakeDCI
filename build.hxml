@@ -2,6 +2,7 @@
 -lib haxedci
 -lib deepstate
 
+-dce no
 -debug
 -cp src
 -D analyzer-optimize

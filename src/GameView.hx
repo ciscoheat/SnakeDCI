@@ -1,3 +1,4 @@
+import pixi.DisplayObject;
 import data.Playfield;
 import data.Snake;
 import phaser.Text;
@@ -41,11 +42,11 @@ class GameView implements dci.Context {
     function create(playfieldWidth, playfieldHeight, segmentSize) {
         
         ///// Create playfield /////
-        {
+        var playfield = {
             _game.add.tileSprite(0, 0, _game.width, _game.height, _textures.background);
 
-            this.playfield = _game.add.group();
-
+            // Create the border before the playfield,
+            // so it displays below the field.
             var playfieldBorder = {
                 var border = _game.make.graphics();
                 border.lineStyle(2, 0xCCCCCC, 1);
@@ -56,16 +57,23 @@ class GameView implements dci.Context {
             }
 
             // Position playfield and its border on the screen
-            this.playfield.x = (_game.world.width - playfieldWidth) / 2;
-            this.playfield.y = (_game.world.height - playfieldWidth) / 2;
+            var group = _game.add.group();
+            this.PLAYFIELD = group;
 
-            playfieldBorder.x = this.playfield.x - 2;
-            playfieldBorder.y = this.playfield.y - 2;
+            PLAYFIELD.setPixelPosition(
+                (_game.world.width - playfieldWidth) / 2,
+                (_game.world.height - playfieldWidth) / 2
+            );
+
+            playfieldBorder.x = PLAYFIELD.pixelX() - 2;
+            playfieldBorder.y = PLAYFIELD.pixelY() - 2;
+
+            group;
         }
 
         ///// Score and keyboard /////
         {
-            this.score = _game.add.text(10, 10, "Score: " + _asset.state.score, cast {
+            this.SCORE = _game.add.text(10, 10, "Score: " + _asset.state.score, cast {
                 font: "20px Arial",
                 fill: "#ffffff",
                 align: "left",
@@ -73,9 +81,8 @@ class GameView implements dci.Context {
                 boundsAlignV: 'top',
             });
 
-            // If hi-score exists since previous round, use it.
             var highScore = _asset.state.hiScore;
-            this.hiscore = _game.add.text(0, 0, "Hi-score: " + highScore, cast {
+            this.HISCORE = _game.add.text(0, 0, "Hi-score: " + highScore, cast {
                 font: "20px Arial",
                 fill: "#ffffff",
                 align: "right",
@@ -85,23 +92,12 @@ class GameView implements dci.Context {
         }
 
         ///// Create fruit and snake /////
+        {
+            this.SNAKE = (playfield.add(_game.add.group()) : Group);
+            this.FRUIT = (playfield.create(0, 0, _textures.fruit) : Sprite);
+        }
 
-        // Create snake and fruit, add them to the playfield
-        /*
-        var snake = new Snake(game, this._textures);
-        var fruit : Sprite = _game.add.sprite(0,0,_textures.fruit);
-        */
-
-        /*
-        // Create segments for the snake
-        var start = Std.int((playfieldWidth / 2));
-        for(i in 0...4)
-            snake.addSegment(start - i*segmentSize, start);
-
-        // TODO: Prevent initial collision with snake and fruit
-        fruit.x = Std.random(playfieldSize) * segmentSize + 1;
-        fruit.y = Std.random(playfieldSize) * segmentSize + 1;
-        */        
+        _asset.initializeGame();
     }
 
     function update() {
@@ -110,38 +106,51 @@ class GameView implements dci.Context {
 
     ///// Context state /////////////////////////////////////////////
 
+    final _asset : GameState;
+    final _game : Game;
     var _textures : Textures;
-    var _asset : GameState;
-    var _game : Game;
-
-    var playfield : Group;
-    var score : Text;
-    var hiscore : Text;
-
 
     ///// Helper methods ////////////////////////////////////////////
 
     ///// Roles /////////////////////////////////////////////////////
 
-    /*
-    @role var PLAYFIELD : {
+    @role var FRUIT : {
         var x : Float;
-        function doSomething() : Void;
+        var y : Float;
 
         public function interact() {
-            SCORE.test();
+        }
+    }
+
+    @role var PLAYFIELD : {
+        var x : Float;
+        var y : Float;
+
+        public function setPixelPosition(xPos, yPos) {
+            self.x = xPos; self.y = yPos;
+        }
+
+        public function pixelX() return x;
+        public function pixelY() return y;
+    }
+
+    @role var SNAKE : {
+        function addChild(child : DisplayObject) : Void;
+        function xy(index : Int, x : Float, y : Float) : Void;
+        var length : Float;
+
+        public function interact() {
+
         }
     }
 
     @role var SCORE : {
-        var x : Float;
-        function doSomething() : Void;
-
-        public function test() {
-            SELF.doSomething();
-        }
+        function setText(text : String, immediate : Bool) : Void;
     }
-    */
+
+    @role var HISCORE : {
+        function setText(text : String, immediate : Bool) : Void;
+    }
 }
 
 /**

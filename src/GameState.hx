@@ -45,4 +45,17 @@ class GameState extends DeepState<State> {
             }
         });
     }
+
+    public function initializeGame() {
+        var X = Std.int(state.playfield.width);
+        var Y = Std.int(state.playfield.width);
+
+        var segments = [{x: X, y: Y}, {x: X-1, y: Y}, {x: X-2, y: Y}];
+
+        // TODO: Random fruit placement
+        updateMap([
+            state.snake.segments => segments,
+            state.fruit => {x: X+3, y: Y+5}
+        ]);
+    }
 }

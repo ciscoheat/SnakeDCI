@@ -1,3 +1,4 @@
+import GameState.Coordinate;
 import phaser.Text;
 import phaser.Graphics;
 import phaser.CursorKeys;
@@ -101,9 +102,10 @@ class GameView implements dci.Context {
     }
 
     function update() {
-        SNAKE.display();
-        FRUIT.display();
-        SCORE.display();
+        SNAKE.display(_asset.state.snake.segments, _asset.state.playfield.squareSize);
+        FRUIT.display(_asset.state.fruit);
+        SCORE.display(_asset.state.score);
+        HISCORE.display(_asset.state.hiScore);
     }
 
     ///// Context state /////////////////////////////////////////////
@@ -120,10 +122,9 @@ class GameView implements dci.Context {
         var x : Float;
         var y : Float;
 
-        public function display() {
-            var pos = _asset.state.fruit;
-            var pixelX = pos.x * _asset.state.playfield.squareSize + 1;
-            var pixelY = pos.y * _asset.state.playfield.squareSize + 1;
+        public function display(coord : Coordinate) {
+            var pixelX = coord.x * _asset.state.playfield.squareSize + 1;
+            var pixelY = coord.y * _asset.state.playfield.squareSize + 1;
 
             SELF.x = pixelX; SELF.y = pixelY;
         }
@@ -139,13 +140,11 @@ class GameView implements dci.Context {
         function xy(index : Int, x : Float, y : Float) : Void;
         var length : Float;
 
-        public function display() {
-            var segments = _asset.state.snake.segments;
+        public function display(segments : ds.ImmutableArray<Coordinate>, squareSize : Int) {
             var i = 0;
-
             for(segment in segments) {
-                var pixelX = segment.x * _asset.state.playfield.squareSize;
-                var pixelY = segment.y * _asset.state.playfield.squareSize;
+                var pixelX = segment.x * squareSize;
+                var pixelY = segment.y * squareSize;
 
                 if(i >= SELF.length)
                     SELF.addChild(_game.add.sprite(
@@ -163,8 +162,7 @@ class GameView implements dci.Context {
     @role var SCORE : {
         function setText(text : String, immediate : Bool) : Void;
 
-        public function display() {
-            var score = _asset.state.score;
+        public function display(score : Int) {
             SELF.setText('Score: $score', false);
         }
     }
@@ -172,8 +170,7 @@ class GameView implements dci.Context {
     @role var HISCORE : {
         function setText(text : String, immediate : Bool) : Void;
 
-        public function display() {
-            var hiscore = _asset.state.hiScore;
+        public function display(hiscore : Int) {
             SELF.setText('Hi-score: $hiscore', false);
         }
     }

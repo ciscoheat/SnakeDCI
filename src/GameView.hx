@@ -1,6 +1,3 @@
-import pixi.DisplayObject;
-import data.Playfield;
-import data.Snake;
 import phaser.Text;
 import phaser.Graphics;
 import phaser.CursorKeys;
@@ -9,6 +6,7 @@ import phaser.Group;
 import phaser.Phaser;
 import phaser.Game;
 import pixi.RenderTexture;
+import pixi.DisplayObject;
 
 class GameView implements dci.Context {
     public function new(game, asset : GameState) {
@@ -58,16 +56,18 @@ class GameView implements dci.Context {
 
             // Position playfield and its border on the screen
             var group = _game.add.group();
+
+            group.x = (_game.world.width - playfieldWidth) / 2;
+            group.y = (_game.world.height - playfieldWidth) / 2;
+
+            playfieldBorder.x = group.x - 2;
+            playfieldBorder.y = group.y - 2;
+
+            // Bind role
             this.PLAYFIELD = group;
 
-            PLAYFIELD.setPixelPosition(
-                (_game.world.width - playfieldWidth) / 2,
-                (_game.world.height - playfieldWidth) / 2
-            );
-
-            playfieldBorder.x = PLAYFIELD.pixelX() - 2;
-            playfieldBorder.y = PLAYFIELD.pixelY() - 2;
-
+            // Return the full group object, so it can be used later to
+            // add objects to it (snake and fruit).
             group;
         }
 
@@ -93,15 +93,17 @@ class GameView implements dci.Context {
 
         ///// Create fruit and snake /////
         {
-            this.SNAKE = (playfield.add(_game.add.group()) : Group);
-            this.FRUIT = (playfield.create(0, 0, _textures.fruit) : Sprite);
+            this.SNAKE = playfield.add(_game.add.group());
+            this.FRUIT = playfield.create(0, 0, _textures.fruit);
         }
 
         _asset.initializeGame();
     }
 
     function update() {
-
+        SNAKE.display();
+        FRUIT.display();
+        SCORE.display();
     }
 
     ///// Context state /////////////////////////////////////////////
@@ -118,20 +120,18 @@ class GameView implements dci.Context {
         var x : Float;
         var y : Float;
 
-        public function interact() {
+        public function display() {
+            var pos = _asset.state.fruit;
+            var pixelX = pos.x * _asset.state.playfield.squareSize + 1;
+            var pixelY = pos.y * _asset.state.playfield.squareSize + 1;
+
+            SELF.x = pixelX; SELF.y = pixelY;
         }
     }
 
     @role var PLAYFIELD : {
         var x : Float;
         var y : Float;
-
-        public function setPixelPosition(xPos, yPos) {
-            self.x = xPos; self.y = yPos;
-        }
-
-        public function pixelX() return x;
-        public function pixelY() return y;
     }
 
     @role var SNAKE : {
@@ -139,17 +139,43 @@ class GameView implements dci.Context {
         function xy(index : Int, x : Float, y : Float) : Void;
         var length : Float;
 
-        public function interact() {
+        public function display() {
+            var segments = _asset.state.snake.segments;
+            var i = 0;
 
+            for(segment in segments) {
+                var pixelX = segment.x * _asset.state.playfield.squareSize;
+                var pixelY = segment.y * _asset.state.playfield.squareSize;
+
+                if(i >= SELF.length)
+                    SELF.addChild(_game.add.sprite(
+                        pixelX, pixelY, 
+                        SELF.length == 0 ? _textures.head : _textures.segment)
+                    )
+                else
+                    SELF.xy(i, pixelX, pixelY);
+
+                i = i + 1;
+            }
         }
     }
 
     @role var SCORE : {
         function setText(text : String, immediate : Bool) : Void;
+
+        public function display() {
+            var score = _asset.state.score;
+            SELF.setText('Score: $score', false);
+        }
     }
 
     @role var HISCORE : {
         function setText(text : String, immediate : Bool) : Void;
+
+        public function display() {
+            var hiscore = _asset.state.hiScore;
+            SELF.setText('Hi-score: $hiscore', false);
+        }
     }
 }
 

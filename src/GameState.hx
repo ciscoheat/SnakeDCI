@@ -1,3 +1,4 @@
+import ds.ImmutableArray;
 import phaser.Phaser;
 
 typedef Coordinate = {
@@ -7,16 +8,14 @@ typedef Coordinate = {
 
 typedef State = {
     final snake : {
-        final segments : ds.ImmutableArray<Coordinate>;
-        final nextMoveTime : Int;
+        final segments : ImmutableArray<Coordinate>;
+        final nextMoveTime : Float;
         final currentDirection : Float;
+        final wantedDirection : Float;
     };
     final fruit : Coordinate;
     final score : Int;
     final hiScore : Int;
-    final keyboard : {
-        final wantedDirection : Float;
-    };
     final playfield : {
         final width : Int;
         final height : Int;
@@ -29,15 +28,13 @@ class GameState extends DeepState<State> {
         super({
             snake: {
                 segments: [],
-                nextMoveTime: 0,
-                currentDirection: Phaser.RIGHT
+                nextMoveTime: 0.0,
+                currentDirection: Phaser.RIGHT,
+                wantedDirection: Phaser.RIGHT
             },
             fruit: {x: 0, y: 0},
             score: 0,
             hiScore: 0,
-            keyboard: {
-                wantedDirection: Phaser.RIGHT
-            },
             playfield: {
                 width: playfieldSize,
                 height: playfieldSize,
@@ -59,6 +56,23 @@ class GameState extends DeepState<State> {
         ]);
     }
 
-    public function addScore(add : Int)
-        updateIn(state.score, s -> s + add);
+    public function fruitEaten() {
+        updateMap([
+            state.score => s -> s + 10,
+            state.fruit => {x: 3, y: 5}
+        );
+    }
+
+    public function updateMoveTimer(nextMoveTime : Float) {
+        updateIn(state.snake.nextMoveTime, nextMoveTime);
+    }
+
+    public function moveSnake(segments : ImmutableArray<Coordinate>, newDir : Float, speed : Float) {
+        updateIn(state.snake, {
+            segments: segments,
+            nextMoveTime: speed,
+            currentDirection: newDir,
+            wantedDirection: newDir
+        });
+    }
 }

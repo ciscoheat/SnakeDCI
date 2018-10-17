@@ -1,13 +1,7 @@
 import GameState.Coordinate;
-import phaser.Text;
 import phaser.Graphics;
-import phaser.CursorKeys;
-import phaser.Sprite;
-import phaser.Group;
-import phaser.Phaser;
 import phaser.Game;
 import pixi.RenderTexture;
-import pixi.DisplayObject;
 
 class GameView implements dci.Context {
     public function new(game, asset : GameState) {
@@ -34,14 +28,20 @@ class GameView implements dci.Context {
         _game.state.start('Game');
     }
 
+    // Create and load graphics
     function preload() {
         this._textures = new Textures(_game, _asset.state.playfield.squareSize);
     }
 
+    // Instantiate graphics and bind Roles
     function create(playfieldWidth, playfieldHeight, segmentSize) {
         
-        ///// Create playfield /////
+        ///// Playfield /////
         var playfield = {
+            // The playfield is actually played by the playfield model
+            this.PLAYFIELD = _asset.state.playfield;
+
+            // The graphics are static and created separately.
             _game.add.tileSprite(0, 0, _game.width, _game.height, _textures.background);
 
             // Create the border before the playfield,
@@ -64,10 +64,7 @@ class GameView implements dci.Context {
             playfieldBorder.x = group.x - 2;
             playfieldBorder.y = group.y - 2;
 
-            // Bind role
-            this.PLAYFIELD = group;
-
-            // Return the full group object, so it can be used later to
+            // Return the group object, so it can be used later to
             // add objects to it (snake and fruit).
             group;
         }
@@ -92,7 +89,7 @@ class GameView implements dci.Context {
             }).setTextBounds(_game.world.width-150, 10, 150-10, 20);
         }
 
-        ///// Create fruit and snake /////
+        ///// Fruit and snake /////
         {
             this.SNAKE = playfield.add(_game.add.group());
             this.FRUIT = playfield.create(0, 0, _textures.fruit);
@@ -101,8 +98,9 @@ class GameView implements dci.Context {
         _asset.initializeGame();
     }
 
+    // Game loop
     function update() {
-        SNAKE.display(_asset.state.snake.segments, _asset.state.playfield.squareSize);
+        SNAKE.display(_asset.state.snake.segments);
         FRUIT.display(_asset.state.fruit);
         SCORE.display(_asset.state.score);
         HISCORE.display(_asset.state.hiScore);
@@ -123,28 +121,30 @@ class GameView implements dci.Context {
         var y : Float;
 
         public function display(coord : Coordinate) {
-            var pixelX = coord.x * _asset.state.playfield.squareSize + 1;
-            var pixelY = coord.y * _asset.state.playfield.squareSize + 1;
+            // Adjust 1 pixel because of smaller size
+            var pixelX = coord.x * PLAYFIELD.squarePixelSize() + 1;
+            var pixelY = coord.y * PLAYFIELD.squarePixelSize() + 1;
 
             SELF.x = pixelX; SELF.y = pixelY;
         }
     }
 
     @role var PLAYFIELD : {
-        var x : Float;
-        var y : Float;
+        final squareSize : Int;
+
+        public function squarePixelSize() return SELF.squareSize;
     }
 
     @role var SNAKE : {
-        function addChild(child : DisplayObject) : Void;
+        function addChild(child : pixi.DisplayObject) : Void;
         function xy(index : Int, x : Float, y : Float) : Void;
         var length : Float;
 
-        public function display(segments : ds.ImmutableArray<Coordinate>, squareSize : Int) {
+        public function display(segments : ds.ImmutableArray<Coordinate>) {
             var i = 0;
             for(segment in segments) {
-                var pixelX = segment.x * squareSize;
-                var pixelY = segment.y * squareSize;
+                var pixelX = segment.x * PLAYFIELD.squarePixelSize();
+                var pixelY = segment.y * PLAYFIELD.squarePixelSize();
 
                 if(i >= SELF.length)
                     SELF.addChild(_game.add.sprite(
@@ -175,6 +175,8 @@ class GameView implements dci.Context {
         }
     }
 }
+
+/////////////////////////////////////////////////////////////////////
 
 /**
  * Graphical resources

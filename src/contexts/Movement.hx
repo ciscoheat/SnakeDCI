@@ -125,26 +125,20 @@ class Movement implements dci.Context {
     }
 
     @role var SEGMENTS : {
-        // TODO: Avoid object schizophrenia by using only copy.
-        function unshift(c : Coordinate) : ImmutableArray<Coordinate>;
-        function pop() : ImmutableArray<Coordinate>;
-        var length : Int;
+        function iterator() : Iterator<Coordinate>;
 
-        // Move all segments to the position in front, starting with x,y
+        // Move all segments to a new position
         public function moveTo(x : Int, y : Int, newDir : Float, timerDelta : Float) {
-            var newPos = SELF.unshift({x: x, y: y}).pop();
+            // TODO: Possibly change this Role to an array, to avoid copy by looping
+            var newPos = [for(segment in SELF) segment];
+            newPos.unshift({x: x, y: y});
+            newPos.pop();
 
             /*
             if(_growOnNextMove) {
                 SELF.addSegment(x, y);
                 _growOnNextMove = false;
             }
-            */
-
-            /*
-            trace(newPos);
-            trace('Moving to: ' + newPos.length);
-            for(m in newPos.toArray()) trace(m);
             */
 
             _asset.moveSnake(newPos, newDir, SELF.moveSpeed(newPos.length) + timerDelta);

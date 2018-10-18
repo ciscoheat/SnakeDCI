@@ -4,6 +4,7 @@ import phaser.Game;
 import GameState.Coordinate;
 import phaser.Timer;
 import phaser.Phaser;
+import ds.ImmutableArray;
 
 private typedef Segment = {
     var x : Float;
@@ -84,7 +85,7 @@ class Movement implements dci.Context {
         public final currentDirection : Float;
         public final wantedDirection : Float;
         public final nextMoveTime : Float;
-    }    
+    }
 
     @role var HEAD : {
         final x : Int;
@@ -124,24 +125,26 @@ class Movement implements dci.Context {
     }
 
     @role var SEGMENTS : {
-        function iterator() : Iterator<Coordinate>;
-        // TODO: var length(default, null) : Int doesn't work as contract field.
+        // TODO: Avoid object schizophrenia by using only copy.
+        function unshift(c : Coordinate) : ImmutableArray<Coordinate>;
+        function pop() : ImmutableArray<Coordinate>;
+        var length : Int;
 
         // Move all segments to the position in front, starting with x,y
         public function moveTo(x : Int, y : Int, newDir : Float, timerDelta : Float) {
-            var newPos = [];
-            for(segment in SELF) {
-                var prevX = segment.x, prevY = segment.y;
-
-                newPos.push({x: x, y: y});
-                x = prevX; y = prevY;
-            }
+            var newPos = SELF.unshift({x: x, y: y}).pop();
 
             /*
             if(_growOnNextMove) {
                 SELF.addSegment(x, y);
                 _growOnNextMove = false;
             }
+            */
+
+            /*
+            trace(newPos);
+            trace('Moving to: ' + newPos.length);
+            for(m in newPos.toArray()) trace(m);
             */
 
             _asset.moveSnake(newPos, newDir, SELF.moveSpeed(newPos.length) + timerDelta);

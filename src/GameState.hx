@@ -60,7 +60,7 @@ class GameState extends DeepState<State> {
         updateMap([
             state.score => s -> s + 10,
             state.fruit => {x: 3, y: 5}
-        );
+        ]);
     }
 
     public function updateMoveTimer(nextMoveTime : Float) {

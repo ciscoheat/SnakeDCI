@@ -20,27 +20,6 @@ class Movement implements dci.Context {
         this.SNAKE = asset.state.snake;
         this.HEAD = asset.state.snake.segments[0];
         this.SEGMENTS = asset.state.snake.segments;
-
-        // Calculate movement direction based on first two segments.
-        // Can't be easily done anywhere else but in the constructor
-        // because of screen wrapping.
-        /*
-        this._wantedDirection = this._currentDirection = {
-            var head : Segment = cast segments.getAt(0);
-            var body : Segment = cast segments.getAt(1);
-
-            var diffY = Math.abs(body.y - head.y);
-            var diffX = Math.abs(body.x - head.x);
-
-            if(diffY < diffX) {
-                if(body.x > head.x) Phaser.LEFT
-                else Phaser.RIGHT;
-            } else {
-                if(body.y > head.y) Phaser.UP
-                else Phaser.DOWN;
-            }
-        }
-        */
     }
 
     ///// System operations ///////////////////////////////////////
@@ -149,27 +128,4 @@ class Movement implements dci.Context {
             return Math.max(150 - numberOfSegments * 3, 50);
         }
     }
-
-    // Move to Controlling Context
-    /*
-    @role var CONTROLLER : {
-        var left : {var isDown : Bool;};
-        var right : {var isDown : Bool;};
-        var up : {var isDown : Bool;};
-        var down : {var isDown : Bool;};
-
-        function direction() {
-            return if(left.isDown) Phaser.LEFT
-            else   if(right.isDown) Phaser.RIGHT
-            else   if(up.isDown) Phaser.UP
-            else   if(down.isDown) Phaser.DOWN
-            else   0;
-        }
-
-        public function updateDirection() {
-            var keyboardDir = SELF.direction();
-            if(keyboardDir != 0) _wantedDirection = keyboardDir;
-        }
-    }
-    */
 }

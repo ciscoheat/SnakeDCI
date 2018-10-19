@@ -111,6 +111,7 @@ class GameView implements dci.Context {
         _game.debug.stop();
 
         new contexts.Movement(_game, _asset).move();
+        new contexts.Controlling(_asset, _game.input.keyboard.createCursorKeys()).start();
     }
 
     ///// Context state /////////////////////////////////////////////

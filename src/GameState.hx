@@ -50,25 +50,29 @@ class GameState extends DeepState<State> {
         var segments = [{x: X, y: Y}, {x: X-1, y: Y}, {x: X-2, y: Y}];
 
         // TODO: Random fruit placement
-        updateMap([
+        return updateMap([
             state.snake.segments => segments,
             state.fruit => {x: X+3, y: Y+5}
         ]);
     }
 
     public function fruitEaten() {
-        updateMap([
+        return updateMap([
             state.score => s -> s + 10,
             state.fruit => {x: 3, y: 5}
         ]);
     }
 
     public function updateMoveTimer(nextMoveTime : Float) {
-        updateIn(state.snake.nextMoveTime, nextMoveTime);
+        return updateIn(state.snake.nextMoveTime, nextMoveTime);
+    }
+
+    public function updateDirection(wantedDirection : Float) {
+        return updateIn(state.snake.wantedDirection, wantedDirection);
     }
 
     public function moveSnake(segments : ImmutableArray<Coordinate>, newDir : Float, speed : Float) {
-        updateIn(state.snake, {
+        return updateIn(state.snake, {
             segments: segments,
             nextMoveTime: speed,
             currentDirection: newDir,

@@ -1,126 +1,109 @@
 package contexts;
 
+import phaser.Game;
 import phaser.GameObjectFactory;
 import phaser.Math;
 import phaser.Keyboard;
 import phaser.Group;
 import phaser.Text;
 import phaser.PhaserTextStyle;
+import GameState.Coordinate;
+import ds.ImmutableArray;
 
 using Lambda;
 
-private typedef Segment = {
-    var x : Float;
-    var y : Float;
-}
-
 class Collisions implements dci.Context {
-    public function new(game : SnakeGame, movement : Movement) {
-        this.SNAKE = game.playfield.snake;
-        this.FRUIT = game.playfield.fruit;
-        this.SCORE = game.score;
-        this.SCREEN = game.game;
-        this.HISCORE = game.hiscore;
+    public function new(asset : GameState, game : Game) {
+        this.SNAKE = asset.state.snake;
+        this.FRUIT = asset.state.fruit;
+        this.SCORE = asset;
 
         this._game = game;
-        this._movement = movement;
-        this._segmentSize = game.segmentSize;
+        this._asset = asset;
     }
 
     ///// System operations  //////////////////////////////////////
 
     public function checkCollisions() {
-        SNAKE.checkForFruitCollision(_game.playfield.width);
+        SNAKE.checkForFruitCollision();
         SNAKE.checkForCollisionWithItself();
     }
 
     ///// Context state ///////////////////////////////////////////
 
-    final _game : SnakeGame;
-    final _movement : Movement;
-    final _segmentSize : Float;
+    final _game : Game;
+    final _asset : GameState;
 
     ///// Helper methods //////////////////////////////////////////
 
     // Test collisions
-    function collides(o1 : Segment, o2 : Segment) : Bool {
-        var x1 = Math.snapToFloor(o1.x, _segmentSize);
-        var y1 = Math.snapToFloor(o1.y, _segmentSize);
-        var x2 = Math.snapToFloor(o2.x, _segmentSize);
-        var y2 = Math.snapToFloor(o2.y, _segmentSize);
+    inline function collides(c1 : Coordinate, c2 : Coordinate) : Bool
+        return c1.x == c2.x && c1.y == c2.y;
 
-        return x1 == x2 && y1 == y2;
-    }
-
+    /*
     // Add event for pressing space, then restart game
     function waitForGameRestart() {
         _game.game.input.keyboard.addKey(Keyboard.SPACEBAR)
             .onUp.addOnce(_game.game.state.restart);
     }
+    */
 
     ///// Roles ///////////////////////////////////////////////////
 
     @role var SNAKE : {
-        function getAt(index : Float) : haxe.extern.EitherType<pixi.DisplayObject, Float>;
-        var length(default, null) : Float;
+        final segments : ImmutableArray<Coordinate>;
 
-        public function segments() : Array<Segment> return cast [
-            for(i in 0...Std.int(SELF.length)) SELF.getAt(i)
-        ];
-
-        public function checkForFruitCollision(playfieldWidth : Float) {
-            if(collides(cast SELF.getAt(0), FRUIT))
-                FRUIT.moveToRandomLocation(playfieldWidth);
+        public function checkForFruitCollision() {
+            if(collides(SELF.segments[0], FRUIT))
+                FRUIT.moveToRandomLocation();
         }
 
         public function checkForCollisionWithItself() {
-            var snakeSegments = SELF.segments();
-            var head = snakeSegments.shift();
+            var head = SELF.segments[0];
+            var body = SELF.segments.shift();
 
-            if(snakeSegments.exists(s -> collides(s, head))) {
-                _movement.stop();
-                SCREEN.showGameOver();
+            if(Lambda.exists(body, s -> collides(s, head))) {
+                trace("GAME OVER");
             }
         }
 
+        public function collidesWith(c : Coordinate) {
+            return Lambda.exists(SELF.segments, s -> collides(s, c));
+        }
+
         public function addSegment() {
-            _movement.growOnNextMove();
+            //_movement.growOnNextMove();
         }
     }
 
     @role var FRUIT : {
-        var x : Float;
-        var y : Float;
+        final x : Int;
+        final y : Int;
 
-        public function moveToRandomLocation(playfieldWidth : Float) {
+        public function moveToRandomLocation() {
+            var newPos : Coordinate;
             do {
-                var max = Std.int(playfieldWidth / _segmentSize);
-                SELF.x = Std.random(max) * _segmentSize + 1;
-                SELF.y = Std.random(max) * _segmentSize + 1;
-            } while(SNAKE.segments().exists(s -> collides(s, SELF)));
+                var newX = Std.random(_asset.state.playfield.width);
+                var newY = Std.random(_asset.state.playfield.height);
+                newPos = {x : newX, y : newY};
+            } while(SNAKE.collidesWith(newPos));
 
-            SCORE.increase();
+            SCORE.increase(newPos);
         }
     }
 
     @role var SCORE : {
-        function setText(text : String, ?immediate : Bool) : Void;
-        var health : Float;
-    
-        public function increase() {
-            SELF.health += 10;
-            SELF.setText('Score: ' + SELF.health);
-            SNAKE.addSegment();
-        }
+        function fruitEaten(newPos : Coordinate) : Void;
 
-        public function submitHiscore() {
-            HISCORE.update(SELF.health);
+        public function increase(newPos : Coordinate) {
+            _asset.fruitEaten(newPos);
         }
     }
 
+    /*
     @role var HISCORE : {
         var health : Float;
-    
+
         public function update(currentScore) {
             // TODO: Save hiscore in browser
             SELF.health = Math.max(SELF.health, currentScore);
@@ -128,7 +111,7 @@ class Collisions implements dci.Context {
             waitForGameRestart();
         }
     }
-    
+
     @role var SCREEN : {
         var height : Float;
         var width : Float;
@@ -158,4 +141,5 @@ class Collisions implements dci.Context {
             SCORE.submitHiscore();
         }
     }
+    */
 }

@@ -12,7 +12,7 @@ private typedef Segment = {
 }
 
 class Movement implements dci.Context {
-    public function new(game : Game, asset : GameState) {
+    public function new(asset : GameState, game : Game) {
         this._game = game;
         this._asset = asset;
 

@@ -110,8 +110,9 @@ class GameView implements dci.Context {
         for(l in lines) _game.debug.line(l);
         _game.debug.stop();
 
-        new contexts.Movement(_game, _asset).move();
+        new contexts.Movement(_asset, _game).move();
         new contexts.Controlling(_asset, _game.input.keyboard.createCursorKeys()).start();
+        new contexts.Collisions(_asset, _game).checkCollisions();
     }
 
     ///// Context state /////////////////////////////////////////////
@@ -212,7 +213,7 @@ private class Textures {
         var fruit : Graphics = game.make.graphics();
         fruit.lineStyle(1, 0xFF2233, 1);
         fruit.beginFill(0xFF3344, 1);
-        fruit.drawRect(0,0, segmentSize-2,segmentSize-2);
+        fruit.drawRect(0,0, segmentSize-3,segmentSize-3);
         fruit.endFill();
 
         var background = 'background';

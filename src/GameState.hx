@@ -56,10 +56,10 @@ class GameState extends DeepState<State> {
         ]);
     }
 
-    public function fruitEaten() {
+    public function fruitEaten(newFruitPos : Coordinate) {
         return updateMap([
             state.score => s -> s + 10,
-            state.fruit => {x: 3, y: 5}
+            state.fruit => newFruitPos
         ]);
     }
 

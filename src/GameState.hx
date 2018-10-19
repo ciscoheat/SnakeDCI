@@ -12,6 +12,7 @@ typedef State = {
         final nextMoveTime : Float;
         final currentDirection : Float;
         final wantedDirection : Float;
+        final growOnNextMove : Bool;
     };
     final fruit : Coordinate;
     final score : Int;
@@ -30,7 +31,8 @@ class GameState extends DeepState<State> {
                 segments: [],
                 nextMoveTime: 0.0,
                 currentDirection: Phaser.RIGHT,
-                wantedDirection: Phaser.RIGHT
+                wantedDirection: Phaser.RIGHT,
+                growOnNextMove: false
             },
             fruit: {x: 0, y: 0},
             score: 0,
@@ -59,7 +61,8 @@ class GameState extends DeepState<State> {
     public function fruitEaten(newFruitPos : Coordinate) {
         return updateMap([
             state.score => s -> s + 10,
-            state.fruit => newFruitPos
+            state.fruit => newFruitPos,
+            state.snake => {growOnNextMove: true}
         ]);
     }
 
@@ -76,7 +79,8 @@ class GameState extends DeepState<State> {
             segments: segments,
             nextMoveTime: speed,
             currentDirection: newDir,
-            wantedDirection: newDir
+            wantedDirection: newDir,
+            growOnNextMove: false
         });
     }
 }

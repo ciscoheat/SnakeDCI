@@ -111,14 +111,7 @@ class Movement implements dci.Context {
             // TODO: Possibly change this Role to an array, to avoid copy by looping
             var newPos = [for(segment in SELF) segment];
             newPos.unshift({x: x, y: y});
-            newPos.pop();
-
-            /*
-            if(_growOnNextMove) {
-                SELF.addSegment(x, y);
-                _growOnNextMove = false;
-            }
-            */
+            if(!_asset.state.snake.growOnNextMove) newPos.pop();
 
             _asset.moveSnake(newPos, newDir, SELF.moveSpeed(newPos.length) + timerDelta);
         }

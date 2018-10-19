@@ -62,13 +62,13 @@ class Collisions implements dci.Context {
             var head = SELF.segments[0];
             var body = SELF.segments.shift();
 
-            if(Lambda.exists(body, s -> collides(s, head))) {
+            if(body.exists(s -> collides(s, head))) {
                 trace("GAME OVER");
             }
         }
 
         public function collidesWith(c : Coordinate) {
-            return Lambda.exists(SELF.segments, s -> collides(s, c));
+            return SELF.segments.exists(s -> collides(s, c));
         }
 
         public function addSegment() {

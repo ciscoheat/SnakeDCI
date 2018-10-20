@@ -26,7 +26,9 @@ class Collisions implements dci.Context {
 
     public function checkCollisions() {
         SNAKE.checkForFruitCollision();
-        SNAKE.checkForCollisionWithItself();
+
+        if(SNAKE.checkForCollisionWithItself())
+            new GameOver(_asset, _game).start();
     }
 
     ///// Context state ///////////////////////////////////////////
@@ -40,14 +42,6 @@ class Collisions implements dci.Context {
     inline function collides(c1 : Coordinate, c2 : Coordinate) : Bool
         return c1.x == c2.x && c1.y == c2.y;
 
-    /*
-    // Add event for pressing space, then restart game
-    function waitForGameRestart() {
-        _game.game.input.keyboard.addKey(Keyboard.SPACEBAR)
-            .onUp.addOnce(_game.game.state.restart);
-    }
-    */
-
     ///// Roles ///////////////////////////////////////////////////
 
     @role var SNAKE : {
@@ -58,21 +52,15 @@ class Collisions implements dci.Context {
                 FRUIT.moveToRandomLocation();
         }
 
-        public function checkForCollisionWithItself() {
+        public function checkForCollisionWithItself() : Bool {
             var head = SELF.segments[0];
             var body = SELF.segments.shift();
 
-            if(body.exists(s -> collides(s, head))) {
-                trace("GAME OVER");
-            }
+            return body.exists(s -> collides(s, head));
         }
 
         public function collidesWith(c : Coordinate) {
             return SELF.segments.exists(s -> collides(s, c));
-        }
-
-        public function addSegment() {
-            //_movement.growOnNextMove();
         }
     }
 
@@ -99,47 +87,4 @@ class Collisions implements dci.Context {
             _asset.fruitEaten(newPos);
         }
     }
-
-    /*
-    @role var HISCORE : {
-        var health : Float;
-
-        public function update(currentScore) {
-            // TODO: Save hiscore in browser
-            SELF.health = Math.max(SELF.health, currentScore);
-
-            waitForGameRestart();
-        }
-    }
-
-    @role var SCREEN : {
-        var height : Float;
-        var width : Float;
-        var add : GameObjectFactory;
-
-        public function showGameOver() {
-            SELF.add.text(0,0, "GAME OVER", cast {
-                font: "50px Arial",
-                fill: "#ffffff",
-                stroke: "#000000",
-                strokeThickness: 3,
-                align: "center",
-                boundsAlignH: 'center',
-                boundsAlignV: 'middle',
-            }).setTextBounds(0, -20, SELF.width, SELF.height);
-
-            SELF.add.text(0,0, "Press space to restart", cast {
-                font: "20px Arial",
-                fill: "#ffffff",
-                stroke: "#000000",
-                strokeThickness: 2,
-                align: "center",
-                boundsAlignH: 'center',
-                boundsAlignV: 'middle',
-            }).setTextBounds(0, 30, SELF.width, SELF.height);
-
-            SCORE.submitHiscore();
-        }
-    }
-    */
 }

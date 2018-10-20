@@ -105,10 +105,12 @@ class GameView implements dci.Context {
         SCORE.display(_asset.state.score);
         HISCORE.display(_asset.state.hiScore);
 
+        /*
         var lines = Std.string(_asset.state.snake).split("\n");
         _game.debug.start(30, 50, 'white');
         for(l in lines) _game.debug.line(l);
         _game.debug.stop();
+        */
 
         new contexts.Movement(_asset, _game).move();
         new contexts.Controlling(_asset, _game.input.keyboard.createCursorKeys()).start();

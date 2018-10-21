@@ -38,19 +38,27 @@ class GameView implements dci.Context {
         
         ///// Playfield /////
         var playfield = {
-            // The playfield is actually played by the playfield model
+            // The playfield is played by the playfield model
             this.PLAYFIELD = _asset.state.playfield;
 
-            // The graphics are static and created separately.
-            _game.add.tileSprite(0, 0, _game.width, _game.height, _textures.background);
+            _game.add.tileSprite(0, 0, 
+                Math.max(playfieldWidth, _game.width), 
+                Math.max(playfieldHeight, _game.height), 
+                _textures.background
+            );
+
+            var scrollWidth = playfieldWidth > _game.width;
+            var scrollHeight = playfieldHeight > _game.height;
 
             // Create the border before the playfield,
             // so it displays below the field.
             var playfieldBorder = {
+                var widthOffset = scrollWidth ? -2 : 2;
+                var heightOffset = scrollHeight ? -2 : 2;
                 var border = _game.make.graphics();
                 border.lineStyle(2, 0xCCCCCC, 1);
                 border.beginFill(0x111111, 0.85);
-                border.drawRect(0,0, playfieldWidth+2,playfieldWidth+2);
+                border.drawRect(0,0, playfieldWidth+widthOffset,playfieldHeight+heightOffset);
                 border.endFill();
                 _game.add.sprite(0, 0, border.generateTexture());
             }
@@ -58,11 +66,13 @@ class GameView implements dci.Context {
             // Position playfield and its border on the screen
             var group = _game.add.group();
 
-            group.x = (_game.world.width - playfieldWidth) / 2;
-            group.y = (_game.world.height - playfieldWidth) / 2;
+            group.x = scrollWidth ? 0 : (_game.world.width - playfieldWidth) / 2;
+            group.y = scrollHeight ? 0 : (_game.world.height - playfieldWidth) / 2;
 
-            playfieldBorder.x = group.x - 2;
-            playfieldBorder.y = group.y - 2;
+            _game.world.setBounds(0, 0, Math.max(_game.width, playfieldWidth), Math.max(_game.height, playfieldHeight));
+
+            playfieldBorder.x = scrollWidth ? 0 : group.x - 2;
+            playfieldBorder.y = scrollHeight ? 0 : group.y - 2;
 
             // Return the group object, so it can be used later to
             // add objects to it (snake and fruit).
@@ -110,6 +120,7 @@ class GameView implements dci.Context {
         _game.debug.start(30, 50, 'white');
         for(l in lines) _game.debug.line(l);
         _game.debug.stop();
+        _game.debug.cameraInfo(_game.camera, 32, 32);
         */
 
         new contexts.Movement(_asset, _game).move();

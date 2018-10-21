@@ -85,11 +85,13 @@ class GameState extends DeepState<State> {
         return updateIn(state.snake.wantedDirection, wantedDirection);
     }
 
-    public function gameOver(score : Int) {
-        return updateMap([
-            state.hiScore => hiscore -> Std.int(Math.max(hiscore, score)),
-            state.snake.nextMoveTime => 1000000000
-        ]);
+    public function gameOver() {
+        // Prevent the snake from moving
+        return updateIn(state.snake.nextMoveTime, 1000000000);
+    }
+
+    public function newHiscore(score : Int) {
+        return updateIn(state.hiScore, score);
     }
 
     public function moveSnake(segments : ImmutableArray<Coordinate>, newDir : Float, speed : Float) {

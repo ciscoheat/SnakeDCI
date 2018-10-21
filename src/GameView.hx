@@ -157,11 +157,14 @@ class GameView implements dci.Context {
                 var pixelX = segment.x * PLAYFIELD.squarePixelSize();
                 var pixelY = segment.y * PLAYFIELD.squarePixelSize();
 
-                if(i >= SELF.length)
-                    SELF.addChild(_game.add.sprite(
+                if(i >= SELF.length) {
+                    var newSprite = _game.add.sprite(
                         pixelX, pixelY, 
-                        SELF.length == 0 ? _textures.head : _textures.segment)
-                    )
+                        SELF.length == 0 ? _textures.head : _textures.segment
+                    );
+                    SELF.addChild(newSprite);
+                    if(i == 0) _game.camera.follow(newSprite);
+                }
                 else
                     SELF.xy(i, pixelX, pixelY);
 

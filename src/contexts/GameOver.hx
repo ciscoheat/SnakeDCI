@@ -15,8 +15,7 @@ using Lambda;
 class GameOver implements dci.Context {
     public function new(asset : GameState, game : Game) {
         this.SCREEN = game;
-        this.SCORE = asset.state;
-        //this.HISCORE = asset;
+        this.GAME = asset.state;
 
         this._game = game;
         this._asset = asset;
@@ -26,9 +25,6 @@ class GameOver implements dci.Context {
 
     public function start() {
         SCREEN.displayGameOver();
-
-        _game.input.keyboard.addKey(Keyboard.SPACEBAR)
-            .onUp.addOnce(_game.state.restart);
     }
 
     ///// Context state ///////////////////////////////////////////
@@ -40,12 +36,28 @@ class GameOver implements dci.Context {
 
     ///// Roles ///////////////////////////////////////////////////
 
-    @role var SCORE : {
+    @role var GAME : {
         final score : Int;
+        final hiScore : Int;
+
+        public function waitForRestart() {
+            _asset.gameOver();
+
+            var bindings : Array<phaser.SignalBinding> = [];
+
+            function restart() {
+                for(b in bindings) b.detach();
+                SELF.submitHiscore();
+                _game.state.restart();
+            }
+
+            bindings.push(_game.input.keyboard.addKey(Keyboard.SPACEBAR).onUp.addOnce(restart));
+            bindings.push(_game.input.onTap.addOnce(restart));
+        }
 
         public function submitHiscore() {
-            _asset.gameOver(score);
-            //HISCORE.update(score);
+            if(SELF.score > SELF.hiScore)
+                _asset.newHiscore(SELF.score);
         }
     }
 
@@ -78,7 +90,7 @@ class GameOver implements dci.Context {
                 boundsAlignV: 'middle',
             }).setTextBounds(0, -20, SELF.width, SELF.height);
 
-            SELF.add.text(0,0, "Press space to restart", cast {
+            SELF.add.text(0,0, "Press space or tap to restart", cast {
                 font: "20px Arial",
                 fill: "#ffffff",
                 stroke: "#000000",
@@ -88,7 +100,7 @@ class GameOver implements dci.Context {
                 boundsAlignV: 'middle',
             }).setTextBounds(0, 30, SELF.width, SELF.height);
 
-            SCORE.submitHiscore();
+            GAME.waitForRestart();
         }
     }
 }

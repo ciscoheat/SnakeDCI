@@ -1,3 +1,4 @@
+import phaser.CursorKeys;
 import GameState.Coordinate;
 import phaser.Graphics;
 import phaser.Game;
@@ -35,7 +36,9 @@ class GameView implements dci.Context {
 
     // Instantiate graphics and bind Roles
     function create(playfieldWidth, playfieldHeight, segmentSize) {
-        
+
+        this._cursorKeys = _game.input.keyboard.createCursorKeys();
+
         ///// Playfield /////
         var playfield = {
             // The playfield is played by the playfield model
@@ -124,7 +127,14 @@ class GameView implements dci.Context {
         */
 
         new contexts.Movement(_asset, _game).move();
-        new contexts.Controlling(_asset, _game.input.keyboard.createCursorKeys()).start();
+
+        new contexts.Controlling(
+            _asset.state.snake, 
+            _cursorKeys,
+            _asset.state.controller.buffer,
+            _asset
+        ).start();
+
         new contexts.Collisions(_asset, _game).checkCollisions();
     }
 
@@ -132,6 +142,7 @@ class GameView implements dci.Context {
 
     final _asset : GameState;
     final _game : Game;
+    var _cursorKeys : CursorKeys;
     var _textures : Textures;
 
     ///// Helper methods ////////////////////////////////////////////

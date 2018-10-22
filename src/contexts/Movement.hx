@@ -20,6 +20,7 @@ class Movement implements dci.Context {
         this.SNAKE = asset.state.snake;
         this.HEAD = asset.state.snake.segments[0];
         this.SEGMENTS = asset.state.snake.segments;
+        this.BUFFER = asset.state.controller.buffer;
     }
 
     ///// System operations ///////////////////////////////////////
@@ -62,8 +63,11 @@ class Movement implements dci.Context {
 
     @role var SNAKE : {
         public final currentDirection : Float;
-        public final wantedDirection : Float;
         public final nextMoveTime : Float;
+    }
+
+    @role var BUFFER : {
+        public final directions : ImmutableArray<Float>;
     }
 
     @role var HEAD : {
@@ -75,7 +79,12 @@ class Movement implements dci.Context {
             var nextX = x, nextY = y;
 
             // Change position of head
-            var moveDir = SELF.disallowOppositeDirectionMove();
+            var moveDir = SELF.disallowOppositeDirectionMove(
+                switch BUFFER.directions.first() {
+                    case None: SNAKE.currentDirection;
+                    case Some(d): d;
+                }
+            );
 
             if(moveDir == Phaser.UP) nextY = y - 1;
             else if(moveDir == Phaser.DOWN) nextY = y + 1;
@@ -93,13 +102,13 @@ class Movement implements dci.Context {
         }
 
         // Disallow 180 degree turns
-        function disallowOppositeDirectionMove() {
+        function disallowOppositeDirectionMove(dir : Float) {
             return if(
-                (SNAKE.wantedDirection == Phaser.RIGHT && SNAKE.currentDirection == Phaser.LEFT) ||
-                (SNAKE.wantedDirection == Phaser.LEFT && SNAKE.currentDirection == Phaser.RIGHT) ||
-                (SNAKE.wantedDirection == Phaser.UP && SNAKE.currentDirection == Phaser.DOWN) ||
-                (SNAKE.wantedDirection == Phaser.DOWN && SNAKE.currentDirection == Phaser.UP)
-            ) SNAKE.currentDirection else SNAKE.wantedDirection;
+                (dir == Phaser.RIGHT && SNAKE.currentDirection == Phaser.LEFT) ||
+                (dir == Phaser.LEFT && SNAKE.currentDirection == Phaser.RIGHT) ||
+                (dir == Phaser.UP && SNAKE.currentDirection == Phaser.DOWN) ||
+                (dir == Phaser.DOWN && SNAKE.currentDirection == Phaser.UP)
+            ) SNAKE.currentDirection else dir;
         }
     }
 

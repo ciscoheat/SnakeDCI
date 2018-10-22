@@ -1,5 +1,6 @@
 import ds.ImmutableArray;
 import phaser.Phaser;
+import haxe.ds.Option;
 
 typedef Coordinate = {
     final x : Int;
@@ -11,8 +12,13 @@ typedef State = {
         final segments : ImmutableArray<Coordinate>;
         final nextMoveTime : Float;
         final currentDirection : Float;
-        final wantedDirection : Float;
     };
+    final controller : {
+        final buffer : {
+            final directions : ImmutableArray<Float>;
+            final position : Coordinate;
+        }
+    }
     final fruit : Coordinate;
     final score : Int;
     final hiScore : Int;
@@ -29,8 +35,13 @@ class GameState extends DeepState<State> {
             snake: {
                 segments: [],
                 nextMoveTime: 0.0,
-                currentDirection: Phaser.RIGHT,
-                wantedDirection: Phaser.RIGHT
+                currentDirection: Phaser.RIGHT
+            },
+            controller : {
+                buffer: {
+                    directions: [],
+                    position: {x: 0, y: 0}
+                }
             },
             fruit: {x: 0, y: 0},
             score: 0,
@@ -54,11 +65,16 @@ class GameState extends DeepState<State> {
             state.snake => {
                 segments: segments,
                 nextMoveTime: 0.0,
-                currentDirection: Phaser.RIGHT,
-                wantedDirection: Phaser.RIGHT
+                currentDirection: Phaser.RIGHT
             },
             state.score => 0,
-            state.fruit => {x: X+3, y: Y+5}
+            state.fruit => {x: X+3, y: Y+5},
+            state.controller => {
+                buffer: {
+                    directions: [],
+                    position: {x: 0, y: 0}
+                }
+            },
         ]);
     }
 
@@ -81,8 +97,25 @@ class GameState extends DeepState<State> {
         return updateIn(state.snake.nextMoveTime, nextMoveTime);
     }
 
-    public function updateDirection(wantedDirection : Float) {
-        return updateIn(state.snake.wantedDirection, wantedDirection);
+    public function updateDirection(direction : Float, position : Option<Coordinate>) {
+        /*
+        TODO: Should work
+        return updateIn(state.controller.buffer, function(b) return {
+            directions: b.directions.push(newDir),
+            position : currentPos
+        });
+        */
+        //if(directions.length > 0) trace(directions + " " + position);
+
+        return switch position {
+            case None:
+                updateIn(state.controller.buffer.directions, d -> d.push(direction));
+            case Some(p):
+                updateIn(state.controller.buffer, {
+                    directions: [direction],
+                    position: p
+                });
+        }
     }
 
     public function gameOver() {
@@ -95,11 +128,13 @@ class GameState extends DeepState<State> {
     }
 
     public function moveSnake(segments : ImmutableArray<Coordinate>, newDir : Float, speed : Float) {
-        return updateIn(state.snake, {
-            segments: segments,
-            nextMoveTime: speed,
-            currentDirection: newDir,
-            wantedDirection: newDir
-        });
+        return updateMap([
+            state.snake => {
+                segments: segments,
+                nextMoveTime: speed,
+                currentDirection: newDir
+            },
+            state.controller.buffer.directions => d -> d.shift()
+        ]);
     }
 }

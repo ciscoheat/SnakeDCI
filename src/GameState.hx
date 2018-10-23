@@ -12,6 +12,7 @@ typedef State = {
         final segments : ImmutableArray<Coordinate>;
         final nextMoveTime : Float;
         final currentDirection : Float;
+        final movesSinceLastFruit : Int;
     };
     final controller : {
         final buffer : {
@@ -35,7 +36,8 @@ class GameState extends DeepState<State> {
             snake: {
                 segments: [],
                 nextMoveTime: 0.0,
-                currentDirection: Phaser.RIGHT
+                currentDirection: Phaser.RIGHT,
+                movesSinceLastFruit: 0
             },
             controller : {
                 buffer: {
@@ -54,7 +56,7 @@ class GameState extends DeepState<State> {
         });
     }
 
-    public function initializeGame() {
+    public function newGame() {
         var X = Std.int(state.playfield.width / 2);
         var Y = Std.int(state.playfield.height / 2);
 
@@ -65,7 +67,8 @@ class GameState extends DeepState<State> {
             state.snake => {
                 segments: segments,
                 nextMoveTime: 0.0,
-                currentDirection: Phaser.RIGHT
+                currentDirection: Phaser.RIGHT,
+                movesSinceLastFruit: 0
             },
             state.score => 0,
             state.fruit => {x: X+3, y: Y+5},
@@ -82,6 +85,7 @@ class GameState extends DeepState<State> {
         return updateMap([
             state.score => s -> s + 10,
             state.fruit => newFruitPos,
+            state.snake.movesSinceLastFruit => 0,
             state.snake.segments => function(s) {
                 var last = s[s.length-1];
                 var nextLast = s[s.length-2];
@@ -127,14 +131,16 @@ class GameState extends DeepState<State> {
         return updateIn(state.hiScore, score);
     }
 
-    public function moveSnake(segments : ImmutableArray<Coordinate>, newDir : Float, speed : Float) {
+    public function moveSnake(segments : ImmutableArray<Coordinate>, newDir : Float, speed : Float, scorePenalty : Int) {
         return updateMap([
             state.snake => {
                 segments: segments,
                 nextMoveTime: speed,
-                currentDirection: newDir
+                currentDirection: newDir,
+                movesSinceLastFruit: state.snake.movesSinceLastFruit + 1
             },
-            state.controller.buffer.directions => d -> d.shift()
+            state.controller.buffer.directions => d -> d.shift(),
+            state.score => s -> Std.int(Math.max(0, s - scorePenalty))
         ]);
     }
 }

@@ -64,6 +64,13 @@ class Movement implements dci.Context {
     @role var SNAKE : {
         public final currentDirection : Float;
         public final nextMoveTime : Float;
+        public final movesSinceLastFruit : Int;
+        public final segments : ImmutableArray<Coordinate>;
+
+        public function scorePenalty() : Int {
+            var avgPlayfieldSize = (PLAYFIELD.height + PLAYFIELD.width) / 2;
+            return Std.int(Math.max(0, (SELF.movesSinceLastFruit - avgPlayfieldSize - segments.length) * 0.1));
+        }
     }
 
     @role var BUFFER : {
@@ -122,7 +129,7 @@ class Movement implements dci.Context {
             newPos.unshift({x: x, y: y});
             newPos.pop();
 
-            _asset.moveSnake(newPos, newDir, SELF.moveSpeed(newPos.length) + timerDelta);
+            _asset.moveSnake(newPos, newDir, SELF.moveSpeed(newPos.length) + timerDelta, SNAKE.scorePenalty());
         }
 
         // Snake movement speed, per ms

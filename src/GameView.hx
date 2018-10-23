@@ -108,7 +108,7 @@ class GameView implements dci.Context {
             this.FRUIT = playfield.create(0, 0, _textures.fruit);
         }
 
-        _asset.initializeGame();
+        _asset.newGame();
     }
 
     // Game loop

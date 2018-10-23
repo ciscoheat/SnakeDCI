@@ -43,16 +43,13 @@ class GameOver implements dci.Context {
         public function waitForRestart() {
             _asset.gameOver();
 
-            var bindings : Array<phaser.SignalBinding> = [];
-
             function restart() {
-                for(b in bindings) b.detach();
                 SELF.submitHiscore();
                 _game.state.restart();
             }
 
-            bindings.push(_game.input.keyboard.addKey(Keyboard.SPACEBAR).onUp.addOnce(restart));
-            bindings.push(_game.input.onTap.addOnce(restart));
+            // TODO: More generic restart method, if other input methods exist.
+            _game.input.keyboard.addKey(Keyboard.SPACEBAR).onUp.addOnce(restart);
         }
 
         public function submitHiscore() {
@@ -60,19 +57,6 @@ class GameOver implements dci.Context {
                 _asset.newHiscore(SELF.score);
         }
     }
-
-    /*
-    @role var HISCORE : {
-        function newHiscore(hiscore : Int) : GameState.State;
-
-        public function update(currentScore) {
-            // TODO: Save hiscore in browser
-            newHiscore(currentScore);
-                
-            waitForGameRestart();
-        }
-    }
-    */
 
     @role var SCREEN : {
         var height : Float;
@@ -90,7 +74,7 @@ class GameOver implements dci.Context {
                 boundsAlignV: 'middle',
             }).setTextBounds(0, -20, SELF.width, SELF.height);
 
-            SELF.add.text(0,0, "Press space or tap to restart", cast {
+            SELF.add.text(0,0, "Press space to restart", cast {
                 font: "20px Arial",
                 fill: "#ffffff",
                 stroke: "#000000",

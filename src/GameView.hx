@@ -108,22 +108,17 @@ class GameView implements dci.Context {
         _asset.initializeGame();
     }
 
-    // Game loop
+      //////////////////////////\
+     ///// Main game loop /////\ \
+    //////////////////////////\ \ \
+
     function update() {
         SNAKE.display(_asset.state.snake.segments);
         FRUIT.display(_asset.state.fruit);
         SCORE.display(_asset.state.score);
         HISCORE.display(_asset.state.hiScore);
 
-        /*
-        var lines = Std.string(_asset.state.snake).split("\n");
-        _game.debug.start(30, 50, 'white');
-        for(l in lines) _game.debug.line(l);
-        _game.debug.stop();
-        _game.debug.cameraInfo(_game.camera, 32, 32);
-        */
-
-        new contexts.Movement(_asset, _game).move();
+        new contexts.Movement(_asset).move(_game.time.physicsElapsedMS);
         new contexts.Controlling(_asset, _game.input.keyboard.createCursorKeys()).start();
         new contexts.Collisions(_asset, _game).checkCollisions();
     }
@@ -143,7 +138,7 @@ class GameView implements dci.Context {
         var y : Float;
 
         public function display(coord : Coordinate) {
-            // Adjust 1 pixel because of smaller size
+            // Adjust 1 pixel because of the smaller size of the fruit
             var pixelX = coord.x * PLAYFIELD.squarePixelSize() + 1;
             var pixelY = coord.y * PLAYFIELD.squarePixelSize() + 1;
 

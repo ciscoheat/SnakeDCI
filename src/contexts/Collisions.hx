@@ -48,7 +48,7 @@ class Collisions implements dci.Context {
         final segments : ImmutableArray<Coordinate>;
 
         public function checkForFruitCollision() {
-            if(collides(SELF.segments[0], FRUIT))
+            if(SELF.collidesWith(FRUIT))
                 FRUIT.moveToRandomLocation();
         }
 
@@ -56,11 +56,11 @@ class Collisions implements dci.Context {
             var head = SELF.segments[0];
             var body = SELF.segments.shift();
 
-            return body.exists(s -> collides(s, head));
+            return body.exists(seg -> collides(seg, head));
         }
 
-        public function collidesWith(c : Coordinate) {
-            return SELF.segments.exists(s -> collides(s, c));
+        public function collidesWith(coord : Coordinate) {
+            return SELF.segments.exists(seg -> collides(seg, coord));
         }
     }
 

@@ -25,6 +25,7 @@ typedef State = {
 
 class GameState extends DeepState<State> {
     public function new(playfieldSize : Int, segmentSize : Int) {
+        // Initial state
         super({
             snake: {
                 segments: [],
@@ -34,6 +35,7 @@ class GameState extends DeepState<State> {
             },
             fruit: {x: 0, y: 0},
             score: 0,
+            // TODO: Load highscore from browser
             hiScore: 0,
             playfield: {
                 width: playfieldSize,
@@ -43,13 +45,14 @@ class GameState extends DeepState<State> {
         });
     }
 
+    ///// Actions ///////////////////////////////////////////////////
+
     public function initializeGame() {
         var X = Std.int(state.playfield.width / 2);
         var Y = Std.int(state.playfield.height / 2);
 
         var segments = [{x: X, y: Y}, {x: X-1, y: Y}, {x: X-2, y: Y}];
 
-        // TODO: Random fruit placement
         return updateMap([
             state.snake => {
                 segments: segments,
@@ -58,7 +61,10 @@ class GameState extends DeepState<State> {
                 wantedDirection: Phaser.RIGHT
             },
             state.score => 0,
-            state.fruit => {x: X+3, y: Y+5}
+            state.fruit => {
+                x: Std.int(Std.random(state.playfield.width)), 
+                y: Std.int(Std.random(state.playfield.height))
+            }
         ]);
     }
 
@@ -66,14 +72,7 @@ class GameState extends DeepState<State> {
         return updateMap([
             state.score => s -> s + 10,
             state.fruit => newFruitPos,
-            state.snake.segments => function(s) {
-                var last = s[s.length-1];
-                var nextLast = s[s.length-2];
-                return s.push({
-                    x : last.x + (last.x-nextLast.x), 
-                    y : last.y - (last.y-nextLast.y)
-                });
-            }
+            state.snake.segments => s -> s.push(s[s.length-1])
         ]);
     }
 
@@ -86,11 +85,12 @@ class GameState extends DeepState<State> {
     }
 
     public function gameOver() {
-        // Prevent the snake from moving
-        return updateIn(state.snake.nextMoveTime, 1000000000);
+        // A simplified way of preventing the snake from moving.
+        return updateIn(state.snake.nextMoveTime, 2147483647);
     }
 
     public function newHiscore(score : Int) {
+        // TODO: Save highscore to browser
         return updateIn(state.hiScore, score);
     }
 

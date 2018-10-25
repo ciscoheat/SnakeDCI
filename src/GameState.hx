@@ -1,3 +1,4 @@
+import js.Browser;
 import ds.ImmutableArray;
 import phaser.Phaser;
 
@@ -31,12 +32,11 @@ class GameState extends DeepState<State> {
             snake: {
                 segments: [],
                 nextMoveTime: 0.0,
-                currentDirection: Phaser.RIGHT,
-                wantedDirection: Phaser.RIGHT
+                currentDirection: 0,
+                wantedDirection: 0
             },
             fruit: {x: 0, y: 0},
             score: 0,
-            // TODO: Load highscore from browser
             hiScore: 0,
             playfield: {
                 width: playfieldSize,
@@ -49,7 +49,7 @@ class GameState extends DeepState<State> {
 
     ///// Actions ///////////////////////////////////////////////////
 
-    public function initializeGame() {
+    public function initializeGame(hiScore : Int) {
         var X = Std.int(state.playfield.width / 2);
         var Y = Std.int(state.playfield.height / 2);
 
@@ -63,6 +63,7 @@ class GameState extends DeepState<State> {
                 wantedDirection: Phaser.RIGHT
             },
             state.score => 0,
+            state.hiScore => hiScore,
             state.fruit => {
                 x: Std.int(Std.random(state.playfield.width)), 
                 y: Std.int(Std.random(state.playfield.height))
@@ -89,11 +90,6 @@ class GameState extends DeepState<State> {
 
     public function gameOver() {
         return updateIn(state.active, false);
-    }
-
-    public function newHiscore(score : Int) {
-        // TODO: Save highscore to browser
-        return updateIn(state.hiScore, score);
     }
 
     public function moveSnake(segments : ImmutableArray<Coordinate>, newDir : Float, speed : Float) {

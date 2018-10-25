@@ -24,6 +24,7 @@ class GameOver implements dci.Context {
     ///// System operations  //////////////////////////////////////
 
     public function start() {
+        _asset.gameOver();
         SCREEN.displayGameOver();
     }
 
@@ -41,20 +42,20 @@ class GameOver implements dci.Context {
         final hiScore : Int;
 
         public function waitForRestart() {
-            _asset.gameOver();
-
-            function restart() {
-                SELF.submitHiscore();
-                _game.state.restart();
-            }
+            SELF.submitHiscore();
 
             // TODO: More generic restart method, if other input methods exist.
-            _game.input.keyboard.addKey(Keyboard.SPACEBAR).onUp.addOnce(restart);
+            _game.input.keyboard.addKey(Keyboard.SPACEBAR)
+            .onUp.addOnce(_game.state.restart);
         }
 
         public function submitHiscore() {
-            if(SELF.score > SELF.hiScore)
-                _asset.newHiscore(SELF.score);
+            if(SELF.score > SELF.hiScore) {
+                // Save score to browser before displaying it,
+                // so the player can compare scores.
+                js.Browser.window.localStorage
+                .setItem("hiScore", Std.string(SELF.score));
+            }
         }
     }
 

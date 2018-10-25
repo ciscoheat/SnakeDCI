@@ -108,12 +108,16 @@ class GameView implements dci.Context {
             fruit.anchor = new pixi.Point(0.5, 0.5);
             var tween = _game.add.tween(fruit).to({angle: 360}, 550, "Linear", true, 1000).repeat(-1, 1000);
             _tweens.push(tween);
-            this.FRUIT = fruit;
 
+            this.FRUIT = fruit;
             this.SNAKE = playfield.add(_game.add.group());
         }
 
-        _asset.initializeGame();
+        // Load hi-score
+        var hi = js.Browser.window.localStorage.getItem("hiScore");
+        var hiScore = if(hi == null) 0 else Std.parseInt(hi);
+
+        _asset.initializeGame(hiScore);
     }
 
       //////////////////////////\

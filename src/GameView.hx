@@ -2,11 +2,14 @@ import GameState.Coordinate;
 import phaser.Graphics;
 import phaser.Game;
 import pixi.RenderTexture;
+import phaser.Sprite;
+import phaser.Tween;
 
 class GameView implements dci.Context {
     public function new(game, asset : GameState) {
         this._game = game;
         this._asset = asset;
+        this._tweens = [];
 
         var playfield = _asset.state.playfield;
 
@@ -101,8 +104,13 @@ class GameView implements dci.Context {
 
         ///// Fruit and snake /////
         {
+            var fruit : Sprite = playfield.create(0, 0, _textures.fruit);
+            fruit.anchor = new pixi.Point(0.5, 0.5);
+            var tween = _game.add.tween(fruit).to({angle: 360}, 550, "Linear", true, 1000).repeat(-1, 1000);
+            _tweens.push(tween);
+            this.FRUIT = fruit;
+
             this.SNAKE = playfield.add(_game.add.group());
-            this.FRUIT = playfield.create(0, 0, _textures.fruit);
         }
 
         _asset.initializeGame();
@@ -113,20 +121,28 @@ class GameView implements dci.Context {
     //////////////////////////\ \ \
 
     function update() {
-        SNAKE.display(_asset.state.snake.segments);
-        FRUIT.display(_asset.state.fruit);
-        SCORE.display(_asset.state.score);
-        HISCORE.display(_asset.state.hiScore);
+        var state = _asset.state;
 
-        new contexts.Movement(_asset).move(_game.time.physicsElapsedMS);
-        new contexts.Controlling(_asset, _game.input.keyboard.createCursorKeys()).start();
-        new contexts.Collisions(_asset, _game).checkCollisions();
+        SNAKE.display(state.snake.segments);
+        FRUIT.display(state.fruit);
+        SCORE.display(state.score);
+        HISCORE.display(state.hiScore);
+
+        // If Game Over, disable all contexts.
+        if(state.active) {
+            new contexts.Movement(_asset).move(_game.time.physicsElapsedMS);
+            new contexts.Controlling(_asset, _game.input.keyboard.createCursorKeys()).start();
+            new contexts.Collisions(_asset, _game).checkCollisions();
+        } else {
+            for(t in _tweens) t.stop();
+        }
     }
 
     ///// Context state /////////////////////////////////////////////
 
     final _asset : GameState;
     final _game : Game;
+    final _tweens : Array<Tween>;
     var _textures : Textures;
 
     ///// Helper methods ////////////////////////////////////////////
@@ -138,9 +154,9 @@ class GameView implements dci.Context {
         var y : Float;
 
         public function display(coord : Coordinate) {
-            // Adjust 1 pixel because of the smaller size of the fruit
-            var pixelX = coord.x * PLAYFIELD.squarePixelSize() + 1;
-            var pixelY = coord.y * PLAYFIELD.squarePixelSize() + 1;
+            // Move to center because of fruit tween
+            var pixelX = coord.x * PLAYFIELD.squarePixelSize() + PLAYFIELD.squarePixelSize() / 2;
+            var pixelY = coord.y * PLAYFIELD.squarePixelSize() + PLAYFIELD.squarePixelSize() / 2;
 
             SELF.x = pixelX; SELF.y = pixelY;
         }
@@ -224,7 +240,7 @@ private class Textures {
         var fruit : Graphics = game.make.graphics();
         fruit.lineStyle(1, 0xFF2233, 1);
         fruit.beginFill(0xFF3344, 1);
-        fruit.drawRect(0,0, segmentSize-3,segmentSize-3);
+        fruit.drawRect(0,0, segmentSize-4,segmentSize-4);
         fruit.endFill();
 
         var background = 'background';

@@ -2,7 +2,8 @@
 -lib haxedci
 -lib deepstate
 
--dce no
+# If problems with Haxe 4, change to -dce no:
+-dce std
 -debug
 -cp src
 -D analyzer-optimize

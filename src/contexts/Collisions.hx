@@ -81,10 +81,10 @@ class Collisions implements dci.Context {
     }
 
     @role var SCORE : {
-        function fruitEaten(newPos : Coordinate) : Void;
+        function fruitEaten(score : Int, newPos : Coordinate) : Void;
 
         public function increase(newPos : Coordinate) {
-            _asset.fruitEaten(newPos);
+            _asset.fruitEaten(10, newPos);
         }
     }
 }

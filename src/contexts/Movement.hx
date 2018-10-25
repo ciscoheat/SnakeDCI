@@ -1,8 +1,6 @@
 package contexts;
 
-import phaser.Game;
 import GameState.Coordinate;
-import phaser.Timer;
 import phaser.Phaser;
 import ds.ImmutableArray;
 

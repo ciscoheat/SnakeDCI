@@ -21,6 +21,7 @@ typedef State = {
         final height : Int;
         final squareSize : Int;
     }
+    final active : Bool;
 }
 
 class GameState extends DeepState<State> {
@@ -41,7 +42,8 @@ class GameState extends DeepState<State> {
                 width: playfieldSize,
                 height: playfieldSize,
                 squareSize: segmentSize
-            }
+            },
+            active: false
         });
     }
 
@@ -64,13 +66,14 @@ class GameState extends DeepState<State> {
             state.fruit => {
                 x: Std.int(Std.random(state.playfield.width)), 
                 y: Std.int(Std.random(state.playfield.height))
-            }
+            },
+            state.active => true
         ]);
     }
 
-    public function fruitEaten(newFruitPos : Coordinate) {
+    public function fruitEaten(score : Int, newFruitPos : Coordinate) {
         return updateMap([
-            state.score => s -> s + 10,
+            state.score => s -> s + score,
             state.fruit => newFruitPos,
             state.snake.segments => s -> s.push(s[s.length-1])
         ]);
@@ -85,8 +88,7 @@ class GameState extends DeepState<State> {
     }
 
     public function gameOver() {
-        // A simplified way of preventing the snake from moving.
-        return updateIn(state.snake.nextMoveTime, 2147483647);
+        return updateIn(state.active, false);
     }
 
     public function newHiscore(score : Int) {

@@ -1,12 +1,6 @@
 package contexts;
 
 import phaser.Game;
-import phaser.GameObjectFactory;
-import phaser.Math;
-import phaser.Keyboard;
-import phaser.Group;
-import phaser.Text;
-import phaser.PhaserTextStyle;
 import GameState.Coordinate;
 import ds.ImmutableArray;
 
@@ -20,15 +14,17 @@ class Collisions implements dci.Context {
 
         this._game = game;
         this._asset = asset;
+
+        checkCollisions();
     }
 
     ///// System operations  //////////////////////////////////////
 
-    public function checkCollisions() {
+    function checkCollisions() {
         SNAKE.checkForFruitCollision();
 
         if(SNAKE.checkForCollisionWithItself())
-            new GameOver(_asset, _game).start();
+            new GameOver(_asset, _game);
     }
 
     ///// Context state ///////////////////////////////////////////

@@ -2,52 +2,50 @@ package contexts;
 
 import phaser.Game;
 import phaser.GameObjectFactory;
-import phaser.Math;
 import phaser.Keyboard;
-import phaser.Group;
-import phaser.Text;
-import phaser.PhaserTextStyle;
-import GameState.Coordinate;
-import ds.ImmutableArray;
 
-using Lambda;
-
+/**
+ * Called from Collisions.
+ */
 class GameOver implements dci.Context {
     public function new(asset : GameState, game : Game) {
         this.SCREEN = game;
         this.GAME = asset.state;
-
+        this.CONTROLLER = game.input;
+        
         this._game = game;
-        this._asset = asset;
+
+        start(asset);
     }
 
     ///// System operations  //////////////////////////////////////
 
-    public function start() {
-        _asset.gameOver();
+    function start(asset : GameState) {
+        asset.gameOver();
         SCREEN.displayGameOver();
     }
 
     ///// Context state ///////////////////////////////////////////
 
     final _game : Game;
-    final _asset : GameState;
 
     ///// Helper methods //////////////////////////////////////////
 
     ///// Roles ///////////////////////////////////////////////////
 
+    @role var CONTROLLER : {
+        var keyboard : Keyboard;
+
+        public function waitForRestart() {
+            // TODO: More generic restart method, for other input methods.
+            SELF.keyboard.addKey(Keyboard.SPACEBAR)
+            .onUp.addOnce(_game.state.restart);            
+        }
+    }
+
     @role var GAME : {
         final score : Int;
         final hiScore : Int;
-
-        public function waitForRestart() {
-            SELF.submitHiscore();
-
-            // TODO: More generic restart method, if other input methods exist.
-            _game.input.keyboard.addKey(Keyboard.SPACEBAR)
-            .onUp.addOnce(_game.state.restart);
-        }
 
         public function submitHiscore() {
             if(SELF.score > SELF.hiScore) {
@@ -56,6 +54,8 @@ class GameOver implements dci.Context {
                 js.Browser.window.localStorage
                 .setItem("hiScore", Std.string(SELF.score));
             }
+
+            CONTROLLER.waitForRestart();
         }
     }
 
@@ -85,7 +85,7 @@ class GameOver implements dci.Context {
                 boundsAlignV: 'middle',
             }).setTextBounds(0, 30, SELF.width, SELF.height);
 
-            GAME.waitForRestart();
+            GAME.submitHiscore();
         }
     }
 }

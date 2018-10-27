@@ -5,17 +5,19 @@ import phaser.Phaser;
 import ds.ImmutableArray;
 
 class Movement implements dci.Context {
-    public function new(asset : GameState) {
+    public function new(asset : GameState, msElapsed : Float) {
         this._asset = asset;
 
         this.PLAYFIELD = asset.state.playfield;
         this.SNAKE = asset.state.snake;
         this.HEAD = asset.state.snake.segments[0];
+
+        move(msElapsed);
     }
 
     ///// System operations ///////////////////////////////////////
 
-    public function move(msElapsed : Float) {
+    function move(msElapsed : Float) {
         var movementTime = SNAKE.nextMoveTime - msElapsed;
 
         if(movementTime <= 0)
@@ -45,10 +47,9 @@ class Movement implements dci.Context {
     }
 
     @role var SNAKE : {
-        public final currentDirection : Float;
-        public final wantedDirection : Float;
         public final nextMoveTime : Float;
-
+        final currentDirection : Float;
+        final wantedDirection : Float;
         final segments : ImmutableArray<Coordinate>;
 
         // Move all segments to a new position
@@ -58,6 +59,16 @@ class Movement implements dci.Context {
             newPos.pop();
 
             _asset.moveSnake(newPos, newDir, SELF.moveSpeed(newPos.length) + timerDelta);
+        }
+
+        public function moveDirection() : Float {
+            // Disallow 180 degree turns
+            return if(
+                (SELF.wantedDirection == Phaser.RIGHT && SELF.currentDirection == Phaser.LEFT) ||
+                (SELF.wantedDirection == Phaser.LEFT && SELF.currentDirection == Phaser.RIGHT) ||
+                (SELF.wantedDirection == Phaser.UP && SELF.currentDirection == Phaser.DOWN) ||
+                (SELF.wantedDirection == Phaser.DOWN && SELF.currentDirection == Phaser.UP)
+            ) SELF.currentDirection else SELF.wantedDirection;
         }
 
         // Snake movement speed, per ms
@@ -75,11 +86,11 @@ class Movement implements dci.Context {
             var nextX = x, nextY = y;
 
             // Change position of head
-            var moveDir = SELF.disallowOppositeDirectionMove();
+            var moveDir = SNAKE.moveDirection();
 
-            if(moveDir == Phaser.UP) nextY = y - 1;
-            else if(moveDir == Phaser.DOWN) nextY = y + 1;
-            else if(moveDir == Phaser.LEFT) nextX = x - 1;
+                 if(moveDir == Phaser.UP)    nextY = y - 1;
+            else if(moveDir == Phaser.DOWN)  nextY = y + 1;
+            else if(moveDir == Phaser.LEFT)  nextX = x - 1;
             else if(moveDir == Phaser.RIGHT) nextX = x + 1;
 
             // Wrap around playfield
@@ -90,16 +101,6 @@ class Movement implements dci.Context {
             else if(nextY < 0) nextY = PLAYFIELD.height - 1;
 
             SNAKE.moveTo(nextX, nextY, moveDir, timerDelta);
-        }
-
-        // Disallow 180 degree turns
-        function disallowOppositeDirectionMove() {
-            return if(
-                (SNAKE.wantedDirection == Phaser.RIGHT && SNAKE.currentDirection == Phaser.LEFT) ||
-                (SNAKE.wantedDirection == Phaser.LEFT && SNAKE.currentDirection == Phaser.RIGHT) ||
-                (SNAKE.wantedDirection == Phaser.UP && SNAKE.currentDirection == Phaser.DOWN) ||
-                (SNAKE.wantedDirection == Phaser.DOWN && SNAKE.currentDirection == Phaser.UP)
-            ) SNAKE.currentDirection else SNAKE.wantedDirection;
         }
     }
 }

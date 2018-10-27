@@ -1,4 +1,3 @@
-import js.Browser;
 import ds.ImmutableArray;
 import phaser.Phaser;
 
@@ -49,34 +48,46 @@ class GameState extends DeepState<State> {
 
     ///// Actions ///////////////////////////////////////////////////
 
-    public function initializeGame(hiScore : Int) {
-        var X = Std.int(state.playfield.width / 2);
-        var Y = Std.int(state.playfield.height / 2);
+    public function fruitEaten(score : Int, newFruitPos : Coordinate) {
+        return updateMap([
+            state.score => s -> s + score,
+            state.fruit => newFruitPos,
+            state.snake.segments => s -> s.push(s[s.length-1])
+        ]);
+    }
 
-        var segments = [{x: X, y: Y}, {x: X-1, y: Y}, {x: X-2, y: Y}];
+    public function gameOver() {
+        return updateIn(state.active, false);
+    }
 
+    public function moveSnake(
+        newSegments : ImmutableArray<Coordinate>, 
+        newDir : Float, speed : Float) 
+    {
+        return updateIn(state.snake, {
+            segments: newSegments,
+            nextMoveTime: speed,
+            currentDirection: newDir,
+            wantedDirection: newDir
+        });
+    }
+
+    public function initializeGame(
+        startSegments : ImmutableArray<Coordinate>, 
+        fruitPos : Coordinate, 
+        hiScore : Int) 
+    {
         return updateMap([
             state.snake => {
-                segments: segments,
+                segments: startSegments,
                 nextMoveTime: 0.0,
                 currentDirection: Phaser.RIGHT,
                 wantedDirection: Phaser.RIGHT
             },
             state.score => 0,
             state.hiScore => hiScore,
-            state.fruit => {
-                x: Std.int(Std.random(state.playfield.width)), 
-                y: Std.int(Std.random(state.playfield.height))
-            },
+            state.fruit => fruitPos,
             state.active => true
-        ]);
-    }
-
-    public function fruitEaten(score : Int, newFruitPos : Coordinate) {
-        return updateMap([
-            state.score => s -> s + score,
-            state.fruit => newFruitPos,
-            state.snake.segments => s -> s.push(s[s.length-1])
         ]);
     }
 
@@ -86,18 +97,5 @@ class GameState extends DeepState<State> {
 
     public function updateDirection(wantedDirection : Float) {
         return updateIn(state.snake.wantedDirection, wantedDirection);
-    }
-
-    public function gameOver() {
-        return updateIn(state.active, false);
-    }
-
-    public function moveSnake(segments : ImmutableArray<Coordinate>, newDir : Float, speed : Float) {
-        return updateIn(state.snake, {
-            segments: segments,
-            nextMoveTime: speed,
-            currentDirection: newDir,
-            wantedDirection: newDir
-        });
     }
 }

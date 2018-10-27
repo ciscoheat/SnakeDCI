@@ -15,9 +15,8 @@ class Main implements dci.Context {
     static function main() 
         new Main().start();
 
-    public function start() {
+    public function start()
         _gameView.start();
-    }
 
     ///// Context state /////////////////////////////////////////////
 

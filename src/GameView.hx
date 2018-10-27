@@ -1,9 +1,10 @@
 import GameState.Coordinate;
 import phaser.Graphics;
 import phaser.Game;
-import pixi.RenderTexture;
 import phaser.Sprite;
 import phaser.Tween;
+import pixi.RenderTexture;
+import contexts.*;
 
 class GameView implements dci.Context {
     public function new(game, asset : GameState) {
@@ -103,21 +104,35 @@ class GameView implements dci.Context {
         }
 
         ///// Fruit and snake /////
-        {
-            var fruit : Sprite = playfield.create(0, 0, _textures.fruit);
-            fruit.anchor = new pixi.Point(0.5, 0.5);
-            var tween = _game.add.tween(fruit).to({angle: 360}, 550, "Linear", true, 1000).repeat(-1, 1000);
-            _tweens.push(tween);
+        var fruit : Sprite = playfield.create(0, 0, _textures.fruit);
 
-            this.FRUIT = fruit;
-            this.SNAKE = playfield.add(_game.add.group());
+        // Create fruit spinning effect
+        fruit.anchor = new pixi.Point(0.5, 0.5);
+        var tween = _game.add.tween(fruit).to({angle: 360}, 550, "Linear", true, 1000).repeat(-1, 1000);
+        _tweens.push(tween);
+
+        // Bind roles
+        this.FRUIT = fruit;
+        this.SNAKE = playfield.add(_game.add.group());
+
+        // Create initial segments of snake
+        var startSegments = {
+            var X = Std.int(_asset.state.playfield.width / 2);
+            var Y = Std.int(_asset.state.playfield.height / 2);
+
+            [{x: X, y: Y}, {x: X-1, y: Y}, {x: X-2, y: Y}];
         }
 
-        // Load hi-score
+        var fruitStartPos = {
+            x: Std.int(Std.random(_asset.state.playfield.width)), 
+            y: Std.int(Std.random(_asset.state.playfield.height))
+        };
+
+        // Load hi-score (saved in GameOver)
         var hi = js.Browser.window.localStorage.getItem("hiScore");
         var hiScore = if(hi == null) 0 else Std.parseInt(hi);
 
-        _asset.initializeGame(hiScore);
+        _asset.initializeGame(startSegments, fruitStartPos, hiScore);
     }
 
       //////////////////////////\
@@ -134,9 +149,9 @@ class GameView implements dci.Context {
 
         // If Game Over, disable all contexts.
         if(state.active) {
-            new contexts.Movement(_asset).move(_game.time.physicsElapsedMS);
-            new contexts.Controlling(_asset, _game.input.keyboard.createCursorKeys()).start();
-            new contexts.Collisions(_asset, _game).checkCollisions();
+            new Movement(_asset, _game.time.physicsElapsedMS);
+            new Controlling(_asset, _game.input.keyboard.createCursorKeys());
+            new Collisions(_asset, _game);
         } else {
             for(t in _tweens) t.stop();
         }

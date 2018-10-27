@@ -7,11 +7,13 @@ class Controlling implements dci.Context {
     public function new(SNAKE, CONTROLLER) {
         this.SNAKE = SNAKE;
         this.CONTROLLER = CONTROLLER;
+
+        checkDirection();
     }
 
     ///// System Operations /////////////////////////////////////////
 
-    public function start() {
+    function checkDirection() {
         SNAKE.checkDirection();
     }
 
@@ -30,6 +32,7 @@ class Controlling implements dci.Context {
         }
     }
 
+    // TODO: A more precise input method with buffering
     @role var CONTROLLER : {
         var left(default, never) : {var isDown : Bool;};
         var right(default, never) : {var isDown : Bool;};

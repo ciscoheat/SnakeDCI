@@ -10,26 +10,24 @@ class Collisions implements dci.Context {
     public function new(asset : GameState, game : Game) {
         this.SNAKE = asset.state.snake;
         this.FRUIT = asset.state.fruit;
-        this.SCORE = asset;
+        this.GAME = asset.state;
 
-        this._game = game;
         this._asset = asset;
 
-        checkCollisions();
+        checkCollisions(game);
     }
 
     ///// System operations  //////////////////////////////////////
 
-    function checkCollisions() {
+    function checkCollisions(game) {
         SNAKE.checkForFruitCollision();
 
         if(SNAKE.checkForCollisionWithItself())
-            new GameOver(_asset, _game);
+            new GameOver(_asset, game);
     }
 
     ///// Context state ///////////////////////////////////////////
 
-    final _game : Game;
     final _asset : GameState;
 
     ///// Helper methods //////////////////////////////////////////
@@ -58,6 +56,12 @@ class Collisions implements dci.Context {
         public function collidesWith(coord : Coordinate) {
             return SELF.segments.exists(seg -> collides(seg, coord));
         }
+
+        public function addSegment(fruitPos : Coordinate, score : Int) {
+            // Append a copy of the last segment to the segments
+            var newSegments = SELF.segments.push(SELF.segments[SELF.segments.length-1]);
+            _asset.fruitEaten(score, fruitPos, newSegments);
+        }
     }
 
     @role var FRUIT : {
@@ -72,15 +76,15 @@ class Collisions implements dci.Context {
                 newPos = {x : newX, y : newY};
             } while(SNAKE.collidesWith(newPos));
 
-            SCORE.increase(newPos);
+            GAME.increaseScore(newPos);
         }
     }
 
-    @role var SCORE : {
-        function fruitEaten(score : Int, newPos : Coordinate) : Void;
+    @role var GAME : {
+        final score : Int;
 
-        public function increase(newPos : Coordinate) {
-            _asset.fruitEaten(10, newPos);
+        public function increaseScore(newFruitPos : Coordinate) {
+            SNAKE.addSegment(newFruitPos, SELF.score + 10);
         }
     }
 }

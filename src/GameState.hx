@@ -48,11 +48,15 @@ class GameState extends DeepState<State> {
 
     ///// Actions ///////////////////////////////////////////////////
 
-    public function fruitEaten(score : Int, newFruitPos : Coordinate) {
+    public function fruitEaten(
+        newScore : Int, 
+        newFruitPos : Coordinate, 
+        newSegments : ImmutableArray<Coordinate>
+    ) {
         return updateMap([
-            state.score => s -> s + score,
+            state.score => newScore,
             state.fruit => newFruitPos,
-            state.snake.segments => s -> s.push(s[s.length-1])
+            state.snake.segments => newSegments
         ]);
     }
 
@@ -62,11 +66,11 @@ class GameState extends DeepState<State> {
 
     public function moveSnake(
         newSegments : ImmutableArray<Coordinate>, 
-        newDir : Float, speed : Float) 
+        newDir : Float, speedMs : Float) 
     {
         return updateIn(state.snake, {
             segments: newSegments,
-            nextMoveTime: speed,
+            nextMoveTime: speedMs,
             currentDirection: newDir,
             wantedDirection: newDir
         });

@@ -1,3 +1,4 @@
+import haxecontracts.*;
 import ds.ImmutableArray;
 import phaser.Phaser;
 
@@ -24,15 +25,15 @@ typedef State = {
     final active : Bool;
 }
 
-class GameState extends DeepState<State> {
+class GameState extends DeepState<State> implements HaxeContracts {
     public function new(playfieldSize : Int, segmentSize : Int) {
         // Initial state
         super({
             snake: {
                 segments: [],
-                nextMoveTime: 0.0,
-                currentDirection: 0,
-                wantedDirection: 0
+                nextMoveTime: 0,
+                currentDirection: Phaser.RIGHT,
+                wantedDirection: Phaser.RIGHT
             },
             fruit: {x: 0, y: 0},
             score: 0,
@@ -53,6 +54,8 @@ class GameState extends DeepState<State> {
         newFruitPos : Coordinate, 
         newSegments : ImmutableArray<Coordinate>
     ) {
+        Contract.ensures(Contract.result.score >= Contract.old(newScore), "Score decreased.");
+
         return updateMap([
             state.score => newScore,
             state.fruit => newFruitPos,
@@ -101,5 +104,29 @@ class GameState extends DeepState<State> {
 
     public function updateDirection(wantedDirection : Float) {
         return updateIn(state.snake.wantedDirection, wantedDirection);
+    }
+
+    ///// Contract invariants ///////////////////////////////////////
+
+    @invariants function invariants() {
+        Contract.invariant(
+            state.fruit.x >= 0 && state.fruit.x < state.playfield.width &&
+            state.fruit.y >= 0 && state.fruit.y < state.playfield.height
+        , "Fruit outside playfield.");
+
+        Contract.invariant(!state.snake.segments.exists(s ->
+            (s.x < 0 || s.x >= state.playfield.width) ||
+            (s.y < 0 || s.y >= state.playfield.height)
+        ), "Snake segment outside playfield.");
+
+        Contract.invariant(state.snake.currentDirection > 0);
+        Contract.invariant(state.snake.wantedDirection > 0);
+        Contract.invariant(state.snake.nextMoveTime >= 0);
+
+        Contract.invariant(state.score >= 0);
+        Contract.invariant(state.hiScore >= 0);
+
+        Contract.invariant(state.playfield.width > 0);
+        Contract.invariant(state.playfield.height > 0);
     }
 }

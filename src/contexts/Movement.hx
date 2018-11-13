@@ -54,9 +54,9 @@ class Movement implements dci.Context {
 
         // Move all segments to a new position
         public function moveTo(x : Int, y : Int, newDir : Float, timerDelta : Float) {
-            var newPos = SELF.segments.copy();
-            newPos.unshift({x: x, y: y});
-            newPos.pop();
+
+            // Remove last segment and add a new one in the front position.
+            var newPos = SELF.segments.pop().unshift({x: x, y: y});
 
             _asset.moveSnake(newPos, newDir, SELF.moveSpeed(newPos.length) + timerDelta);
         }

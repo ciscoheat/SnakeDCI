@@ -123,7 +123,7 @@ class GameView implements dci.Context {
             [{x: X, y: Y}, {x: X-1, y: Y}, {x: X-2, y: Y}];
         }
 
-        var fruitStartPos = {
+        var fruitStartPos : Coordinate = {
             x: Std.int(Std.random(_asset.state.playfield.width)), 
             y: Std.int(Std.random(_asset.state.playfield.height))
         };
@@ -146,6 +146,8 @@ class GameView implements dci.Context {
         FRUIT.display(state.fruit);
         SCORE.display(state.score);
         HISCORE.display(state.hiScore);
+
+        //_game.debug.start(20, 45, 'white'); for(line in Std.string(state).split("\n")) _game.debug.line(line);
 
         // If Game Over, disable all contexts.
         if(state.active) {

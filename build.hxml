@@ -1,9 +1,10 @@
 -lib phaser
 -lib haxedci
 -lib deepstate
+-lib HaxeContracts
 
 # If problems with Haxe 4, change to -dce no:
--dce std
+-dce no
 -debug
 -cp src
 -D analyzer-optimize

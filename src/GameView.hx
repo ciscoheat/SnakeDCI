@@ -7,19 +7,20 @@ import pixi.RenderTexture;
 import contexts.*;
 
 class GameView implements dci.Context {
-    public function new(game, asset : GameState) {
+    public function new(game : Game, asset : GameState, segmentPixelSize : Float) {
         this._game = game;
         this._asset = asset;
         this._tweens = [];
+        this._segmentPixelSize = segmentPixelSize;
 
         var playfield = _asset.state.playfield;
 
         _game.state.add('Game', {
             preload: this.preload,
             create: this.create.bind(
-                playfield.width * playfield.squareSize, 
-                playfield.height * playfield.squareSize,
-                playfield.squareSize
+                playfield.width * segmentPixelSize, 
+                playfield.height * segmentPixelSize,
+                segmentPixelSize
             ),
             update: this.update
         });
@@ -34,7 +35,7 @@ class GameView implements dci.Context {
 
     // Create and load graphics
     function preload() {
-        this._textures = new Textures(_game, _asset.state.playfield.squareSize);
+        this._textures = new Textures(_game, _segmentPixelSize);
     }
 
     // Instantiate graphics and bind Roles
@@ -42,9 +43,6 @@ class GameView implements dci.Context {
         
         ///// Playfield /////
         var playfield = {
-            // The playfield is played by the playfield model
-            this.PLAYFIELD = _asset.state.playfield;
-
             _game.add.tileSprite(0, 0, 
                 Math.max(playfieldWidth, _game.width), 
                 Math.max(playfieldHeight, _game.height), 
@@ -164,6 +162,8 @@ class GameView implements dci.Context {
     final _asset : GameState;
     final _game : Game;
     final _tweens : Array<Tween>;
+    final _segmentPixelSize : Float;
+
     var _textures : Textures;
 
     ///// Helper methods ////////////////////////////////////////////
@@ -176,17 +176,11 @@ class GameView implements dci.Context {
 
         public function display(coord : Coordinate) {
             // Move to center because of fruit tween
-            var pixelX = coord.x * PLAYFIELD.squarePixelSize() + PLAYFIELD.squarePixelSize() / 2;
-            var pixelY = coord.y * PLAYFIELD.squarePixelSize() + PLAYFIELD.squarePixelSize() / 2;
+            var pixelX = coord.x * _segmentPixelSize + _segmentPixelSize / 2;
+            var pixelY = coord.y * _segmentPixelSize + _segmentPixelSize / 2;
 
             SELF.x = pixelX; SELF.y = pixelY;
         }
-    }
-
-    @role var PLAYFIELD : {
-        final squareSize : Int;
-
-        public function squarePixelSize() return SELF.squareSize;
     }
 
     @role var SNAKE : {
@@ -197,8 +191,8 @@ class GameView implements dci.Context {
         public function display(segments : ds.ImmutableArray<Coordinate>) {
             var i = 0;
             for(segment in segments) {
-                var pixelX = segment.x * PLAYFIELD.squarePixelSize();
-                var pixelY = segment.y * PLAYFIELD.squarePixelSize();
+                var pixelX = segment.x * _segmentPixelSize;
+                var pixelY = segment.y * _segmentPixelSize;
 
                 if(i >= SELF.length) {
                     var newSprite = _game.add.sprite(
@@ -244,7 +238,7 @@ private class Textures {
     public final fruit : RenderTexture;
     public final background : String;
 
-    public function new(game : Game, segmentSize : Int) {
+    public function new(game : Game, segmentSize : Float) {
 
         var head : Graphics = game.make.graphics();
         head.lineStyle(1, 0xFFFFFF, 1);

@@ -24,7 +24,7 @@ class Controlling implements dci.Context {
     ///// Roles /////////////////////////////////////////////////////
 
     @role var SNAKE : {
-        function updateDirection(wantedDirection : Float) : State;
+        function updateDirection(wantedDirection : Float) : Void;
 
         public function checkDirection() {
             var dir = CONTROLLER.direction();

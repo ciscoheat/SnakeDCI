@@ -3,10 +3,10 @@ import phaser.Game;
 
 class Main implements dci.Context {
     public function new(width = 600, height = 600, playfieldSize = 20, segmentSize = 20) {
-        var asset = new GameState(playfieldSize, segmentSize);
+        var asset = new GameState(playfieldSize);
         var game = new Game(width, height, Phaser.AUTO, 'snakedci');
         
-        this._gameView = new GameView(game, asset);
+        this._gameView = new GameView(game, asset, segmentSize);
     }
 
     ///// System Operations /////////////////////////////////////////

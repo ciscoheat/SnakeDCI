@@ -185,6 +185,7 @@ class GameView implements dci.Context {
 
     @role var SNAKE : {
         function addChild(child : pixi.DisplayObject) : Void;
+        function removeChildAt(index : Int) : Void;
         function xy(index : Int, x : Float, y : Float) : Void;
         var length : Float;
 
@@ -207,6 +208,9 @@ class GameView implements dci.Context {
 
                 i = i + 1;
             }
+
+            while(i < SELF.length)
+                removeChildAt(Std.int(SELF.length-1));
         }
     }
 

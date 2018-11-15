@@ -25,7 +25,7 @@ typedef State = {
 }
 
 class GameState extends DeepState<State> implements HaxeContracts {
-    public function new(playfieldSize : Int) {
+    public function new(playfieldSize : Int, middleware = null) {
         // Initial state
         super({
             snake: {
@@ -42,7 +42,7 @@ class GameState extends DeepState<State> implements HaxeContracts {
                 height: playfieldSize
             },
             active: false
-        });
+        }, middleware);
     }
 
     ///// Actions ///////////////////////////////////////////////////
@@ -103,6 +103,9 @@ class GameState extends DeepState<State> implements HaxeContracts {
     public function updateDirection(wantedDirection : Float) {
         updateIn(state.snake.wantedDirection, wantedDirection);
     }
+
+    public function revert(previous : State)
+        updateIn(state, previous);
 
     ///// Contract invariants ///////////////////////////////////////
 

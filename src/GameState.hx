@@ -54,7 +54,7 @@ class GameState extends DeepState<State> implements HaxeContracts {
     ) {
         Contract.ensures(state.score >= Contract.old(newScore), "Score decreased.");
 
-        updateMap([
+        update([
             state.score => newScore,
             state.fruit => newFruitPos,
             state.snake.segments => newSegments
@@ -62,14 +62,14 @@ class GameState extends DeepState<State> implements HaxeContracts {
     }
 
     public function gameOver() {
-        updateIn(state.active, false);
+        update(state.active, false);
     }
 
     public function moveSnake(
         newSegments : ImmutableArray<Coordinate>, 
         newDir : Float, speedMs : Float) 
     {
-        updateIn(state.snake, {
+        update(state.snake, {
             segments: newSegments,
             nextMoveTime: speedMs,
             currentDirection: newDir,
@@ -82,7 +82,7 @@ class GameState extends DeepState<State> implements HaxeContracts {
         fruitPos : Coordinate, 
         hiScore : Int) 
     {
-        updateMap([
+        update([
             state.snake => {
                 segments: startSegments,
                 nextMoveTime: 0.0,
@@ -97,15 +97,15 @@ class GameState extends DeepState<State> implements HaxeContracts {
     }
 
     public function updateMoveTimer(nextMoveTime : Float) {
-        updateIn(state.snake.nextMoveTime, nextMoveTime);
+        update(state.snake.nextMoveTime, nextMoveTime);
     }
 
     public function updateDirection(wantedDirection : Float) {
-        updateIn(state.snake.wantedDirection, wantedDirection);
+        update(state.snake.wantedDirection, wantedDirection);
     }
 
     public function revert(previous : State)
-        updateIn(state, previous);
+        update(state, previous);
 
     ///// Contract invariants ///////////////////////////////////////
 

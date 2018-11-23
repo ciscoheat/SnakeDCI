@@ -130,7 +130,7 @@ class GameView implements dci.Context {
         var hi = js.Browser.window.localStorage.getItem("hiScore");
         var hiScore = if(hi == null) 0 else Std.parseInt(hi);
 
-        _asset.initializeGame(startSegments, fruitStartPos, hiScore);
+        _asset = _asset.initializeGame(startSegments, fruitStartPos, hiScore);
     }
 
       //////////////////////////\
@@ -149,9 +149,10 @@ class GameView implements dci.Context {
 
         // If Game Over, disable all contexts.
         if(state.active) {
-            new Movement(_asset, _game.time.physicsElapsedMS);
-            new Controlling(_asset, _game.input.keyboard.createCursorKeys());
-            new Collisions(_asset, _game);
+            var next = new Movement(_asset).move(_game.time.physicsElapsedMS);
+            next = new Controlling(next, _game.input.keyboard.createCursorKeys()).checkDirection();
+            next = new Collisions(next).checkCollisions(_game);
+            _asset = next;
         } else {
             for(t in _tweens) t.stop();
         }
@@ -159,11 +160,11 @@ class GameView implements dci.Context {
 
     ///// Context state /////////////////////////////////////////////
 
-    final _asset : GameState;
     final _game : Game;
     final _tweens : Array<Tween>;
     final _segmentPixelSize : Float;
 
+    var _asset : GameState;
     var _textures : Textures;
 
     ///// Helper methods ////////////////////////////////////////////

@@ -14,20 +14,20 @@ class GameOver implements dci.Context {
         this.CONTROLLER = game.input;
         
         this._game = game;
-
-        start(asset);
+        this._asset = asset;
     }
 
     ///// System operations  //////////////////////////////////////
 
-    function start(asset : GameState) {
-        asset.gameOver();
+    public function start() {
         SCREEN.displayGameOver();
+        return _asset.gameOver();
     }
 
     ///// Context state ///////////////////////////////////////////
 
     final _game : Game;
+    final _asset : GameState;
 
     ///// Helper methods //////////////////////////////////////////
 

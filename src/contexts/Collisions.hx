@@ -7,23 +7,23 @@ import ds.ImmutableArray;
 using Lambda;
 
 class Collisions implements dci.Context {
-    public function new(asset : GameState, game : Game) {
+    public function new(asset : GameState) {
         this.SNAKE = asset.state.snake;
         this.FRUIT = asset.state.fruit;
         this.GAME = asset.state;
 
         this._asset = asset;
-
-        checkCollisions(game);
     }
 
     ///// System operations  //////////////////////////////////////
 
-    function checkCollisions(game) {
-        SNAKE.checkForFruitCollision();
+    public function checkCollisions(game : Game) {
+        var next = SNAKE.checkForFruitCollision(_asset);
 
-        if(SNAKE.checkForCollisionWithItself())
-            new GameOver(_asset, game);
+        return if(SNAKE.checkForCollisionWithItself())
+            new GameOver(next, game).start();
+        else
+            next;
     }
 
     ///// Context state ///////////////////////////////////////////
@@ -41,9 +41,11 @@ class Collisions implements dci.Context {
     @role var SNAKE : {
         final segments : ImmutableArray<Coordinate>;
 
-        public function checkForFruitCollision() {
-            if(SELF.collidesWith(FRUIT))
+        public function checkForFruitCollision(state) {
+            return if(SELF.collidesWith(FRUIT))
                 FRUIT.moveToRandomLocation();
+            else
+                state;
         }
 
         public function checkForCollisionWithItself() : Bool {
@@ -60,7 +62,7 @@ class Collisions implements dci.Context {
         public function addSegment(fruitPos : Coordinate, score : Int) {
             // Append a copy of the last segment to the segments
             var newSegments = SELF.segments.push(SELF.segments[SELF.segments.length-1]);
-            _asset.fruitEaten(score, fruitPos, newSegments);
+            return _asset.fruitEaten(score, fruitPos, newSegments);
         }
     }
 
@@ -76,7 +78,7 @@ class Collisions implements dci.Context {
                 newPos = {x : newX, y : newY};
             } while(SNAKE.collidesWith(newPos));
 
-            GAME.increaseScore(newPos);
+            return GAME.increaseScore(newPos);
         }
     }
 
@@ -84,7 +86,7 @@ class Collisions implements dci.Context {
         final score : Int;
 
         public function increaseScore(newFruitPos : Coordinate) {
-            SNAKE.addSegment(newFruitPos, SELF.score + 10);
+            return SNAKE.addSegment(newFruitPos, SELF.score + 10);
         }
     }
 }

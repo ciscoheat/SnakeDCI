@@ -5,22 +5,20 @@ import phaser.Phaser;
 import ds.ImmutableArray;
 
 class Movement implements dci.Context {
-    public function new(asset : GameState, msElapsed : Float) {
+    public function new(asset : GameState) {
         this._asset = asset;
 
         this.PLAYFIELD = asset.state.playfield;
         this.SNAKE = asset.state.snake;
         this.HEAD = asset.state.snake.segments[0];
-
-        move(msElapsed);
     }
 
     ///// System operations ///////////////////////////////////////
 
-    function move(msElapsed : Float) {
+    public function move(msElapsed : Float) {
         var movementTime = SNAKE.nextMoveTime - msElapsed;
 
-        if(movementTime <= 0)
+        return if(movementTime <= 0)
             HEAD.moveOneStepAhead(movementTime);
         else
             _asset.updateMoveTimer(movementTime);
@@ -58,7 +56,7 @@ class Movement implements dci.Context {
             // Remove last segment and add a new one in the front position.
             var newPos = SELF.segments.pop().unshift({x: x, y: y});
 
-            _asset.moveSnake(newPos, newDir, SELF.moveSpeed(newPos.length) + timerDelta);
+            return _asset.moveSnake(newPos, newDir, SELF.moveSpeed(newPos.length) + timerDelta);
         }
 
         public function moveDirection() : Float {
@@ -100,7 +98,7 @@ class Movement implements dci.Context {
             if(nextY >= PLAYFIELD.height) nextY = 0;
             else if(nextY < 0) nextY = PLAYFIELD.height - 1;
 
-            SNAKE.moveTo(nextX, nextY, moveDir, timerDelta);
+            return SNAKE.moveTo(nextX, nextY, moveDir, timerDelta);
         }
     }
 }

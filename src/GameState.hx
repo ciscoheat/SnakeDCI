@@ -24,26 +24,9 @@ typedef State = {
     final active : Bool;
 }
 
-class GameState extends DeepState<State> implements HaxeContracts {
-    public function new(playfieldSize : Int, middleware = null) {
-        // Initial state
-        super({
-            snake: {
-                segments: [],
-                nextMoveTime: 0,
-                currentDirection: Phaser.RIGHT,
-                wantedDirection: Phaser.RIGHT
-            },
-            fruit: {x: 0, y: 0},
-            score: 0,
-            hiScore: 0,
-            playfield: {
-                width: playfieldSize,
-                height: playfieldSize
-            },
-            active: false
-        }, middleware);
-    }
+class GameState extends DeepState<GameState, State> implements HaxeContracts {
+    public function new(initialState, middleware = null)
+        super(initialState, middleware);
 
     ///// Actions ///////////////////////////////////////////////////
 
@@ -52,9 +35,9 @@ class GameState extends DeepState<State> implements HaxeContracts {
         newFruitPos : Coordinate, 
         newSegments : ImmutableArray<Coordinate>
     ) {
-        Contract.ensures(state.score >= Contract.old(newScore), "Score decreased.");
+        Contract.ensures(Contract.result.state.score >= Contract.old(newScore), "Score decreased.");
 
-        update([
+        return update([
             state.score => newScore,
             state.fruit => newFruitPos,
             state.snake.segments => newSegments
@@ -62,14 +45,14 @@ class GameState extends DeepState<State> implements HaxeContracts {
     }
 
     public function gameOver() {
-        update(state.active, false);
+        return update(state.active, false);
     }
 
     public function moveSnake(
         newSegments : ImmutableArray<Coordinate>, 
         newDir : Float, speedMs : Float) 
     {
-        update(state.snake, {
+        return update(state.snake, {
             segments: newSegments,
             nextMoveTime: speedMs,
             currentDirection: newDir,
@@ -82,7 +65,7 @@ class GameState extends DeepState<State> implements HaxeContracts {
         fruitPos : Coordinate, 
         hiScore : Int) 
     {
-        update([
+        return update([
             state.snake => {
                 segments: startSegments,
                 nextMoveTime: 0.0,
@@ -97,15 +80,15 @@ class GameState extends DeepState<State> implements HaxeContracts {
     }
 
     public function updateMoveTimer(nextMoveTime : Float) {
-        update(state.snake.nextMoveTime, nextMoveTime);
+        return update(state.snake.nextMoveTime, nextMoveTime);
     }
 
     public function updateDirection(wantedDirection : Float) {
-        update(state.snake.wantedDirection, wantedDirection);
+        return wantedDirection == 0 ? this : update(state.snake.wantedDirection, wantedDirection);
     }
 
     public function revert(previous : State)
-        update(state, previous);
+        return update(state, previous);
 
     ///// Contract invariants ///////////////////////////////////////
 

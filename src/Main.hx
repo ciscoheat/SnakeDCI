@@ -5,7 +5,22 @@ import ds.Action;
 class Main implements dci.Context {
     public function new(width = 600, height = 600, playfieldSize = 20, segmentSize = 20) {
         var logger = new MiddlewareLog<GameState.State>();
-        var asset = new GameState(playfieldSize, [logger.log]);
+        var asset = new GameState({
+            snake: {
+                segments: [],
+                nextMoveTime: 0,
+                currentDirection: Phaser.RIGHT,
+                wantedDirection: Phaser.RIGHT
+            },
+            fruit: {x: 0, y: 0},
+            score: 0,
+            hiScore: 0,
+            playfield: {                
+                width: playfieldSize,
+                height: playfieldSize
+            },
+            active: false
+        }, [logger.log]);
         var game = new Game(width, height, Phaser.AUTO, 'snakedci');
         
         this._gameView = new GameView(game, asset, segmentSize);

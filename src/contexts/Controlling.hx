@@ -7,14 +7,12 @@ class Controlling implements dci.Context {
     public function new(SNAKE, CONTROLLER) {
         this.SNAKE = SNAKE;
         this.CONTROLLER = CONTROLLER;
-
-        checkDirection();
     }
 
     ///// System Operations /////////////////////////////////////////
 
-    function checkDirection() {
-        SNAKE.checkDirection();
+    public function checkDirection() {
+        return SNAKE.checkDirection();
     }
 
     ///// Context state /////////////////////////////////////////////
@@ -24,11 +22,10 @@ class Controlling implements dci.Context {
     ///// Roles /////////////////////////////////////////////////////
 
     @role var SNAKE : {
-        function updateDirection(wantedDirection : Float) : Void;
+        function updateDirection(wantedDirection : Float) : GameState;
 
         public function checkDirection() {
-            var dir = CONTROLLER.direction();
-            if(dir != 0) updateDirection(dir);
+            return updateDirection(CONTROLLER.direction());
         }
     }
 

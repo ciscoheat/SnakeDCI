@@ -1,9 +1,11 @@
 import phaser.Phaser;
 import phaser.Game;
+import ds.Action;
 
 class Main implements dci.Context {
     public function new(width = 600, height = 600, playfieldSize = 20, segmentSize = 20) {
-        var asset = new GameState(playfieldSize);
+        var logger = new MiddlewareLog<GameState.State>();
+        var asset = new GameState(playfieldSize, [logger.log]);
         var game = new Game(width, height, Phaser.AUTO, 'snakedci');
         
         this._gameView = new GameView(game, asset, segmentSize);
@@ -25,4 +27,19 @@ class Main implements dci.Context {
     ///// Helper methods ////////////////////////////////////////////
 
     ///// Roles /////////////////////////////////////////////////////
+}
+
+class MiddlewareLog<T> {
+    public function new() {}
+
+    public final logs = new Array<{state: T, type: String, timestamp: Date}>();
+
+    public function log(state: T, next : Action -> T, action : Action) : T {
+        // Get the next state
+        var newState = next(action);
+
+        // Log it and return it unchanged
+        logs.push({state: newState, type: action.type, timestamp: Date.now()});
+        return newState;
+    }
 }

@@ -18,12 +18,12 @@ class Collisions implements dci.Context {
     ///// System operations  //////////////////////////////////////
 
     public function checkCollisions(game : Game) {
-        var next = SNAKE.checkForFruitCollision(_asset);
-
-        return if(SNAKE.checkForCollisionWithItself())
-            new GameOver(next, game).start();
+        return if(SNAKE.checkForFruitCollision())
+            FRUIT.moveToRandomLocation();
+        else if(SNAKE.checkForCollisionWithItself())
+            new GameOver(_asset, game).start();
         else
-            next;
+            _asset;
     }
 
     ///// Context state ///////////////////////////////////////////
@@ -41,11 +41,8 @@ class Collisions implements dci.Context {
     @role var SNAKE : {
         final segments : ImmutableArray<Coordinate>;
 
-        public function checkForFruitCollision(state) {
-            return if(SELF.collidesWith(FRUIT))
-                FRUIT.moveToRandomLocation();
-            else
-                state;
+        public function checkForFruitCollision() {
+            return SELF.collidesWith(FRUIT);
         }
 
         public function checkForCollisionWithItself() : Bool {

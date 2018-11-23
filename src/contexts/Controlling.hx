@@ -4,9 +4,10 @@ import GameState.State;
 import phaser.Phaser;
 
 class Controlling implements dci.Context {
-    public function new(SNAKE, CONTROLLER) {
-        this.SNAKE = SNAKE;
+    public function new(asset : GameState, CONTROLLER) {
+        this.SNAKE = asset.state.snake;
         this.CONTROLLER = CONTROLLER;
+        this._asset = asset;
     }
 
     ///// System Operations /////////////////////////////////////////
@@ -17,15 +18,15 @@ class Controlling implements dci.Context {
 
     ///// Context state /////////////////////////////////////////////
 
+    final _asset : GameState;
+
     ///// Helper methods ////////////////////////////////////////////
 
     ///// Roles /////////////////////////////////////////////////////
 
     @role var SNAKE : {
-        function updateDirection(wantedDirection : Float) : GameState;
-
         public function checkDirection() {
-            return updateDirection(CONTROLLER.direction());
+            return _asset.updateDirection(CONTROLLER.direction());
         }
     }
 

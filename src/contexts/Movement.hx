@@ -21,7 +21,7 @@ class Movement implements dci.Context {
         return if(movementTime <= 0)
             HEAD.moveOneStepAhead(movementTime);
         else
-            _asset.updateMoveTimer(movementTime);
+            _asset.update(_asset.state.snake.nextMoveTime, movementTime, "Movement.updateMoveTimer");
     }
 
     ///// Context state ///////////////////////////////////////////
@@ -55,8 +55,15 @@ class Movement implements dci.Context {
 
             // Remove last segment and add a new one in the front position.
             var newPos = SELF.segments.pop().unshift({x: x, y: y});
+            var speedMs = SELF.moveSpeed(newPos.length) + timerDelta;
 
-            return _asset.moveSnake(newPos, newDir, SELF.moveSpeed(newPos.length) + timerDelta);
+            //return _asset.moveSnake(newPos, newDir, );
+            return _asset.update(_asset.state.snake, {
+                segments: newPos,
+                nextMoveTime: speedMs,
+                currentDirection: newDir,
+                wantedDirection: newDir
+            });
         }
 
         public function moveDirection() : Float {

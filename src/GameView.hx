@@ -1,17 +1,20 @@
+import Main.MiddlewareLog;
 import GameState.Coordinate;
 import phaser.Graphics;
 import phaser.Game;
 import phaser.Sprite;
 import phaser.Tween;
+import phaser.Phaser;
 import pixi.RenderTexture;
 import contexts.*;
 
 class GameView implements dci.Context {
-    public function new(game : Game, asset : GameState, segmentPixelSize : Float) {
+    public function new(game : Game, asset : GameState, segmentPixelSize : Float, logger : MiddlewareLog<GameState.State>) {
         this._game = game;
         this._asset = asset;
         this._tweens = [];
         this._segmentPixelSize = segmentPixelSize;
+        this._logger = logger;
 
         var playfield = _asset.state.playfield;
 
@@ -130,7 +133,19 @@ class GameView implements dci.Context {
         var hi = js.Browser.window.localStorage.getItem("hiScore");
         var hiScore = if(hi == null) 0 else Std.parseInt(hi);
 
-        _asset = _asset.initializeGame(startSegments, fruitStartPos, hiScore);
+        //_asset = _asset.initializeGame(startSegments, fruitStartPos, hiScore);
+        _asset = _asset.update([
+            _asset.state.snake => {
+                segments: startSegments,
+                nextMoveTime: 0.0,
+                currentDirection: Phaser.RIGHT,
+                wantedDirection: Phaser.RIGHT
+            },
+            _asset.state.score => 0,
+            _asset.state.hiScore => hiScore,
+            _asset.state.fruit => fruitStartPos,
+            _asset.state.active => true
+        ]);
     }
 
       //////////////////////////\
@@ -161,6 +176,7 @@ class GameView implements dci.Context {
     ///// Context state /////////////////////////////////////////////
 
     final _game : Game;
+    final _logger : MiddlewareLog<GameState.State>;
     final _tweens : Array<Tween>;
     final _segmentPixelSize : Float;
 

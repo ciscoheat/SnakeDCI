@@ -59,7 +59,12 @@ class Collisions implements dci.Context {
         public function addSegment(fruitPos : Coordinate, score : Int) {
             // Append a copy of the last segment to the segments
             var newSegments = SELF.segments.push(SELF.segments[SELF.segments.length-1]);
-            return _asset.fruitEaten(score, fruitPos, newSegments);
+
+            return _asset.update([
+                _asset.state.score => score,
+                _asset.state.fruit => fruitPos,
+                _asset.state.snake.segments => newSegments
+            ]);
         }
     }
 

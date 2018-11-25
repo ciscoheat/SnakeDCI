@@ -21,7 +21,7 @@ class GameOver implements dci.Context {
 
     public function start() {
         SCREEN.displayGameOver();
-        return _asset.gameOver();
+        return _asset.update(_asset.state.active, false);
     }
 
     ///// Context state ///////////////////////////////////////////

@@ -26,7 +26,10 @@ class Controlling implements dci.Context {
 
     @role var SNAKE : {
         public function checkDirection() {
-            return _asset.updateDirection(CONTROLLER.direction());
+            var wantedDirection = CONTROLLER.direction();
+            return wantedDirection == 0 
+                ? _asset
+                : _asset.update(_asset.state.snake.wantedDirection, wantedDirection);
         }
     }
 

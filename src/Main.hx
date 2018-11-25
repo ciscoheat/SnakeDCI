@@ -23,7 +23,7 @@ class Main implements dci.Context {
         }, [logger.log]);
         var game = new Game(width, height, Phaser.AUTO, 'snakedci');
         
-        this._gameView = new GameView(game, asset, segmentSize);
+        this._gameView = new GameView(game, asset, segmentSize, logger);
     }
 
     ///// System Operations /////////////////////////////////////////
@@ -55,6 +55,7 @@ class MiddlewareLog<T> {
 
         // Log it and return it unchanged
         logs.push({state: newState, type: action.type, timestamp: Date.now()});
+        if(action.type.indexOf("updateMoveTimer") == -1) trace(action.type);
         return newState;
     }
 }

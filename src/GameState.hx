@@ -30,63 +30,6 @@ class GameState extends DeepState<GameState, State> implements HaxeContracts {
 
     ///// Actions ///////////////////////////////////////////////////
 
-    public function fruitEaten(
-        newScore : Int, 
-        newFruitPos : Coordinate, 
-        newSegments : ImmutableArray<Coordinate>
-    ) {
-        Contract.ensures(Contract.result.state.score >= Contract.old(newScore), "Score decreased.");
-
-        return update([
-            state.score => newScore,
-            state.fruit => newFruitPos,
-            state.snake.segments => newSegments
-        ]);
-    }
-
-    public function gameOver() {
-        return update(state.active, false);
-    }
-
-    public function moveSnake(
-        newSegments : ImmutableArray<Coordinate>, 
-        newDir : Float, speedMs : Float) 
-    {
-        return update(state.snake, {
-            segments: newSegments,
-            nextMoveTime: speedMs,
-            currentDirection: newDir,
-            wantedDirection: newDir
-        });
-    }
-
-    public function initializeGame(
-        startSegments : ImmutableArray<Coordinate>, 
-        fruitPos : Coordinate, 
-        hiScore : Int) 
-    {
-        return update([
-            state.snake => {
-                segments: startSegments,
-                nextMoveTime: 0.0,
-                currentDirection: Phaser.RIGHT,
-                wantedDirection: Phaser.RIGHT
-            },
-            state.score => 0,
-            state.hiScore => hiScore,
-            state.fruit => fruitPos,
-            state.active => true
-        ]);
-    }
-
-    public function updateMoveTimer(nextMoveTime : Float) {
-        return update(state.snake.nextMoveTime, nextMoveTime);
-    }
-
-    public function updateDirection(wantedDirection : Float) {
-        return wantedDirection == 0 ? this : update(state.snake.wantedDirection, wantedDirection);
-    }
-
     public function revert(previous : State)
         return update(state, previous);
 

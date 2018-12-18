@@ -2,12 +2,13 @@ package contexts;
 
 import phaser.Game;
 import GameState.Coordinate;
+import GameState.State;
 import ds.ImmutableArray;
 
 using Lambda;
 
 class Collisions implements dci.Context {
-    public function new(asset : GameState) {
+    public function new(asset : DeepState<State>) {
         this.SNAKE = asset.state.snake;
         this.FRUIT = asset.state.fruit;
         this.GAME = asset.state;
@@ -28,7 +29,7 @@ class Collisions implements dci.Context {
 
     ///// Context state ///////////////////////////////////////////
 
-    final _asset : GameState;
+    final _asset : DeepState<State>;
 
     ///// Helper methods //////////////////////////////////////////
 
@@ -60,11 +61,11 @@ class Collisions implements dci.Context {
             // Append a copy of the last segment to the segments
             var newSegments = SELF.segments.push(SELF.segments[SELF.segments.length-1]);
 
-            return _asset.update([
-                _asset.state.score => score,
-                _asset.state.fruit => fruitPos,
-                _asset.state.snake.segments => newSegments
-            ]);
+            return _asset.update(
+                _asset.state.score = score,
+                _asset.state.fruit = fruitPos,
+                _asset.state.snake.segments = newSegments
+            );
         }
     }
 

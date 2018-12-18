@@ -1,11 +1,12 @@
 package contexts;
 
 import GameState.Coordinate;
+import GameState.State;
 import phaser.Phaser;
 import ds.ImmutableArray;
 
 class Movement implements dci.Context {
-    public function new(asset : GameState) {
+    public function new(asset : DeepState<State>) {
         this._asset = asset;
 
         this.PLAYFIELD = asset.state.playfield;
@@ -21,12 +22,12 @@ class Movement implements dci.Context {
         return if(movementTime <= 0)
             HEAD.moveOneStepAhead(movementTime);
         else
-            _asset.update(_asset.state.snake.nextMoveTime, movementTime, "Movement.updateMoveTimer");
+            _asset.update(_asset.state.snake.nextMoveTime = movementTime, "Movement.updateMoveTimer");
     }
 
     ///// Context state ///////////////////////////////////////////
 
-    final _asset : GameState;
+    final _asset : DeepState<State>;
 
     ///// Helper methods //////////////////////////////////////////
 
@@ -57,8 +58,7 @@ class Movement implements dci.Context {
             var newPos = SELF.segments.pop().unshift({x: x, y: y});
             var speedMs = SELF.moveSpeed(newPos.length) + timerDelta;
 
-            //return _asset.moveSnake(newPos, newDir, );
-            return _asset.update(_asset.state.snake, {
+            return _asset.update(_asset.state.snake = {
                 segments: newPos,
                 nextMoveTime: speedMs,
                 currentDirection: newDir,

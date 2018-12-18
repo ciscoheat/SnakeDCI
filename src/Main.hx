@@ -1,11 +1,12 @@
 import phaser.Phaser;
 import phaser.Game;
 import ds.Action;
+import GameState.State;
 
 class Main implements dci.Context {
     public function new(width = 600, height = 600, playfieldSize = 20, segmentSize = 20) {
-        var logger = new MiddlewareLog<GameState.State>();
-        var asset = new GameState({
+        var logger = new MiddlewareLog<State>();
+        var asset = new DeepState<State>({
             snake: {
                 segments: [],
                 nextMoveTime: 0,
@@ -20,7 +21,7 @@ class Main implements dci.Context {
                 height: playfieldSize
             },
             active: false
-        }, [logger.log]);
+        }, [logger.log, (_, next, action) -> GameState.validate(cast next(action))]);
         var game = new Game(width, height, Phaser.AUTO, 'snakedci');
         
         this._gameView = new GameView(game, asset, segmentSize, logger);
@@ -49,12 +50,12 @@ class MiddlewareLog<T> {
 
     public final logs = new Array<{state: T, type: String, timestamp: Date}>();
 
-    public function log(state: T, next : Action -> T, action : Action) : T {
+    public function log(asset: ds.gen.DeepState<T>, next : Action -> ds.gen.DeepState<T>, action : Action) : ds.gen.DeepState<T> {
         // Get the next state
         var newState = next(action);
 
         // Log it and return it unchanged
-        logs.push({state: newState, type: action.type, timestamp: Date.now()});
+        logs.push({state: newState.state, type: action.type, timestamp: Date.now()});
         if(action.type.indexOf("updateMoveTimer") == -1) trace(action.type);
         return newState;
     }

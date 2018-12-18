@@ -24,36 +24,31 @@ typedef State = {
     final active : Bool;
 }
 
-class GameState extends DeepState<GameState, State> implements HaxeContracts {
-    public function new(initialState, middleware = null)
-        super(initialState, middleware);
+class GameState implements HaxeContracts {
 
-    ///// Actions ///////////////////////////////////////////////////
+    public static function validate(asset : DeepState<State>) {
+        var state = asset.state;
 
-    public function revert(previous : State)
-        return update(state, previous);
-
-    ///// Contract invariants ///////////////////////////////////////
-
-    @invariants function invariants() {
-        Contract.invariant(
+        Contract.requires(
             state.fruit.x >= 0 && state.fruit.x < state.playfield.width &&
             state.fruit.y >= 0 && state.fruit.y < state.playfield.height
         , "Fruit outside playfield.");
 
-        Contract.invariant(!state.snake.segments.exists(s ->
+        Contract.requires(!state.snake.segments.exists(s ->
             (s.x < 0 || s.x >= state.playfield.width) ||
             (s.y < 0 || s.y >= state.playfield.height)
         ), "Snake segment outside playfield.");
 
-        Contract.invariant(state.snake.currentDirection > 0);
-        Contract.invariant(state.snake.wantedDirection > 0);
-        Contract.invariant(state.snake.nextMoveTime >= 0);
+        Contract.requires(state.snake.currentDirection > 0);
+        Contract.requires(state.snake.wantedDirection > 0);
+        Contract.requires(state.snake.nextMoveTime >= 0);
 
-        Contract.invariant(state.score >= 0);
-        Contract.invariant(state.hiScore >= 0);
+        Contract.requires(state.score >= 0);
+        Contract.requires(state.hiScore >= 0);
 
-        Contract.invariant(state.playfield.width > 0);
-        Contract.invariant(state.playfield.height > 0);
+        Contract.requires(state.playfield.width > 0);
+        Contract.requires(state.playfield.height > 0);
+
+        return asset;
     }
 }

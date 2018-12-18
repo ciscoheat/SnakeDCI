@@ -1,5 +1,6 @@
 package contexts;
 
+import GameState.State;
 import phaser.Game;
 import phaser.GameObjectFactory;
 import phaser.Keyboard;
@@ -8,7 +9,7 @@ import phaser.Keyboard;
  * Called from Collisions.
  */
 class GameOver implements dci.Context {
-    public function new(asset : GameState, game : Game) {
+    public function new(asset : DeepState<State>, game : Game) {
         this.SCREEN = game;
         this.GAME = asset.state;
         this.CONTROLLER = game.input;
@@ -21,13 +22,13 @@ class GameOver implements dci.Context {
 
     public function start() {
         SCREEN.displayGameOver();
-        return _asset.update(_asset.state.active, false);
+        return _asset.update(_asset.state.active = false);
     }
 
     ///// Context state ///////////////////////////////////////////
 
     final _game : Game;
-    final _asset : GameState;
+    final _asset : DeepState<State>;
 
     ///// Helper methods //////////////////////////////////////////
 

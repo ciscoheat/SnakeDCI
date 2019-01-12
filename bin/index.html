@@ -15,9 +15,8 @@
 
 <script src="game.js"></script>
 <script>
-    if (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "")
-        document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
-            ':35729/livereload.js?snipver=1"></' + 'script>')
+    if (["localhost", "127.0.0.1", ""].indexOf(location.hostname) != -1)
+        document.write('<script src="https://ciscoheat.github.io/cdn/js/live.js"></' + 'script>')
 </script>
 </body>
 </html>

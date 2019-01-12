@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm-run-all -p server livereload",
+    "start": "npm-run-all -p server",
     "server": "http-server bin -c-1 -o",
-    "livereload": "livereload bin --wait 500",
-    "tools": "npm install -g npm-run-all livereload http-server"
+    "tools": "npm install -g npm-run-all http-server"
   },
   "author": "ciscoheat",
   "license": "MIT",

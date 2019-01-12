@@ -85,9 +85,11 @@ class GameView implements dci.Context {
             group;
         }
 
+        var state = _asset.state;
+
         ///// Score and keyboard /////
         {
-            this.SCORE = _game.add.text(10, 10, "Score: " + _asset.state.score, cast {
+            this.SCORE = _game.add.text(10, 10, "Score: " + state.score, cast {
                 font: "20px Arial",
                 fill: "#ffffff",
                 align: "left",
@@ -95,7 +97,7 @@ class GameView implements dci.Context {
                 boundsAlignV: 'top',
             });
 
-            var highScore = _asset.state.hiScore;
+            var highScore = state.hiScore;
             this.HISCORE = _game.add.text(0, 0, "Hi-score: " + highScore, cast {
                 font: "20px Arial",
                 fill: "#ffffff",
@@ -119,15 +121,15 @@ class GameView implements dci.Context {
 
         // Create initial segments of snake
         var startSegments = {
-            var X = Std.int(_asset.state.playfield.width / 2);
-            var Y = Std.int(_asset.state.playfield.height / 2);
+            var X = Std.int(state.playfield.width / 2);
+            var Y = Std.int(state.playfield.height / 2);
 
             [{x: X, y: Y}, {x: X-1, y: Y}, {x: X-2, y: Y}];
         }
 
         var fruitStartPos : Coordinate = {
-            x: Std.int(Std.random(_asset.state.playfield.width)), 
-            y: Std.int(Std.random(_asset.state.playfield.height))
+            x: Std.int(Std.random(state.playfield.width)), 
+            y: Std.int(Std.random(state.playfield.height))
         };
 
         // Load hi-score (saved in GameOver)
@@ -135,16 +137,16 @@ class GameView implements dci.Context {
         var hiScore = if(hi == null) 0 else Std.parseInt(hi);
 
         _asset = _asset.update(
-            _asset.state.snake = {
+            state.snake = {
                 segments: startSegments,
                 nextMoveTime: 0.0,
                 currentDirection: Phaser.RIGHT,
                 wantedDirection: Phaser.RIGHT
             },
-            _asset.state.score = 0,
-            _asset.state.hiScore = hiScore,
-            _asset.state.fruit = fruitStartPos,
-            _asset.state.active = true
+            state.score = 0,
+            state.hiScore = hiScore,
+            state.fruit = fruitStartPos,
+            state.active = true
         );
     }
 

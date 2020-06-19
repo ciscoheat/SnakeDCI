@@ -17,7 +17,7 @@ class Movement implements dci.Context {
     ///// System operations ///////////////////////////////////////
 
     public function move(msElapsed : Float) {
-        var movementTime = SNAKE.nextMoveTime - msElapsed;
+        var movementTime = _asset.state.snake.nextMoveTime - msElapsed;
 
         return if(movementTime <= 0)
             HEAD.moveOneStepAhead(movementTime);
@@ -46,7 +46,6 @@ class Movement implements dci.Context {
     }
 
     @role var SNAKE : {
-        public final nextMoveTime : Float;
         final currentDirection : Float;
         final wantedDirection : Float;
         final segments : ImmutableArray<Coordinate>;

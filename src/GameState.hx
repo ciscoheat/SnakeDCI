@@ -1,6 +1,5 @@
 import haxecontracts.*;
 import ds.ImmutableArray;
-import phaser.Phaser;
 
 typedef Coordinate = {
     final x : Int;

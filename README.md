@@ -8,7 +8,7 @@ The most important aspect of SnakeDCI however, is not to show a simple game, it'
 
 ## How to use
 
-You will need [Haxe 4](https://haxe.org/download/version/4.0.0-preview.4/) and [Node.js](https://nodejs.org/). After cloning or downloading this repository, install some build tools with `npm run tools`, then use `npm start` for automatic reloading when recompiling.
+You will need [Haxe 4](https://haxe.org/) and [Node.js](https://nodejs.org/). After cloning or downloading this repository, install some build tools with `npm run tools`, then use `npm start` for automatic reloading when recompiling.
 
 Use `haxe build.hxml` for compiling, or even better, [VS Code](https://code.visualstudio.com/).
 

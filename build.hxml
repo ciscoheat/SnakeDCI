@@ -3,13 +3,14 @@
 -lib deepstate
 -lib HaxeContracts
 
-# If problems with Haxe 4, change to -dce no:
--dce no
 -debug
 -cp src
 -D analyzer-optimize
 
+--macro nullSafety("contexts", Strict)
+--macro nullSafety("Main", Strict)
+--macro nullSafety("GameState", Strict)
+--macro nullSafety("GameView", Strict)
+
 -main Main
 -js bin/game.js
-
--D deepstate-immutable-asset

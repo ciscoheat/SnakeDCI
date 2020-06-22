@@ -13,7 +13,7 @@ class GameOver implements dci.Context {
         this.SCREEN = game;
         this.GAME = asset.state;
         this.CONTROLLER = game.input;
-        
+
         this._game = game;
         this._asset = asset;
     }

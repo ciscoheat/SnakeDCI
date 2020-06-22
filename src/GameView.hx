@@ -9,6 +9,8 @@ import phaser.Phaser;
 import pixi.RenderTexture;
 import contexts.*;
 
+using NullTools;
+
 class GameView implements dci.Context {
     public function new(game : Game, asset : DeepState<State>, segmentPixelSize : Float, logger : MiddlewareLog<State>) {
         this._game = game;
@@ -44,13 +46,14 @@ class GameView implements dci.Context {
 
     // Instantiate graphics and bind Roles
     function create(playfieldWidth, playfieldHeight, segmentSize) {
-        
+        final textures = _textures.sure();
+
         ///// Playfield /////
         var playfield = {
             _game.add.tileSprite(0, 0, 
                 Math.max(playfieldWidth, _game.width), 
                 Math.max(playfieldHeight, _game.height), 
-                _textures.background
+                textures.background
             );
 
             var scrollWidth = playfieldWidth > _game.width;
@@ -108,7 +111,7 @@ class GameView implements dci.Context {
         }
 
         ///// Fruit and snake /////
-        var fruit : Sprite = playfield.create(0, 0, _textures.fruit);
+        var fruit : Sprite = playfield.create(0, 0, _textures.sure().fruit);
 
         // Create fruit spinning effect
         fruit.anchor = new pixi.Point(0.5, 0.5);
@@ -134,7 +137,7 @@ class GameView implements dci.Context {
 
         // Load hi-score (saved in GameOver)
         var hi = js.Browser.window.localStorage.getItem("hiScore");
-        var hiScore = if(hi == null) 0 else Std.parseInt(hi);
+        var hiScore = Std.parseInt(hi);
 
         _asset = _asset.update(
             state.snake = {
@@ -144,7 +147,7 @@ class GameView implements dci.Context {
                 wantedDirection: Phaser.RIGHT
             },
             state.score = 0,
-            state.hiScore = hiScore,
+            state.hiScore = hiScore == null ? 0 : hiScore,
             state.fruit = fruitStartPos,
             state.active = true
         );
@@ -183,13 +186,13 @@ class GameView implements dci.Context {
     final _segmentPixelSize : Float;
 
     var _asset : DeepState<State>;
-    var _textures : Textures;
+    var _textures : Null<Textures>;
 
     ///// Helper methods ////////////////////////////////////////////
 
     ///// Roles /////////////////////////////////////////////////////
 
-    @role var FRUIT : {
+    @:nullSafety(Off) @role var FRUIT : {
         var x : Float;
         var y : Float;
 
@@ -202,7 +205,7 @@ class GameView implements dci.Context {
         }
     }
 
-    @role var SNAKE : {
+    @:nullSafety(Off) @role var SNAKE : {
         function addChild(child : pixi.DisplayObject) : Void;
         function removeChildAt(index : Int) : Void;
         function xy(index : Int, x : Float, y : Float) : Void;
@@ -210,6 +213,8 @@ class GameView implements dci.Context {
 
         public function display(segments : ds.ImmutableArray<Coordinate>) {
             var i = 0;
+            final textures = _textures.sure();
+
             for(segment in segments) {
                 var pixelX = segment.x * _segmentPixelSize;
                 var pixelY = segment.y * _segmentPixelSize;
@@ -217,7 +222,7 @@ class GameView implements dci.Context {
                 if(i >= SELF.length) {
                     var newSprite = _game.add.sprite(
                         pixelX, pixelY, 
-                        SELF.length == 0 ? _textures.head : _textures.segment
+                        SELF.length == 0 ? textures.head : textures.segment
                     );
                     SELF.addChild(newSprite);
                     if(i == 0) _game.camera.follow(newSprite);
@@ -233,7 +238,7 @@ class GameView implements dci.Context {
         }
     }
 
-    @role var SCORE : {
+    @:nullSafety(Off) @role var SCORE : {
         function setText(text : String, immediate : Bool) : Void;
 
         public function display(score : Int) {
@@ -241,7 +246,7 @@ class GameView implements dci.Context {
         }
     }
 
-    @role var HISCORE : {
+    @:nullSafety(Off) @role var HISCORE : {
         function setText(text : String, immediate : Bool) : Void;
 
         public function display(hiscore : Int) {

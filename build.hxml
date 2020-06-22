@@ -10,7 +10,7 @@
 --macro nullSafety("contexts", Strict)
 --macro nullSafety("Main", Strict)
 --macro nullSafety("GameState", Strict)
-#--macro nullSafety("GameView", Strict)
+--macro nullSafety("GameView", Strict)
 
 -main Main
 -js bin/game.js

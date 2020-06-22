@@ -5,8 +5,8 @@ import GameState.State;
 
 class Main implements dci.Context {
     public function new(width = 600, height = 600, playfieldSize = 20, segmentSize = 20) {
-        var logger = new MiddlewareLog<State>();
-        var asset = new DeepState<State>({
+        final logger = new MiddlewareLog<State>();
+        final asset = new DeepState<State>({
             snake: {
                 segments: [],
                 nextMoveTime: 0,
@@ -23,7 +23,7 @@ class Main implements dci.Context {
             },
             active: false
         }, [logger.log, (_, next, action) -> GameState.validate(cast next(action))]);
-        var game = new Game(width, height, Phaser.AUTO, 'snakedci');
+        final game = new Game(width, height, Phaser.AUTO, 'snakedci');
         
         this._gameView = new GameView(game, asset, segmentSize, logger);
     }
@@ -53,7 +53,7 @@ class MiddlewareLog<T> {
 
     public function log(asset: ds.gen.DeepState<T>, next : Action -> ds.gen.DeepState<T>, action : Action) : ds.gen.DeepState<T> {
         // Get the next state
-        var newState = next(action);
+        final newState = next(action);
 
         // Log it and return it unchanged
         logs.push({state: newState.state, type: action.type, timestamp: Date.now()});

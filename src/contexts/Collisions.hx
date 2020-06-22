@@ -39,7 +39,7 @@ class Collisions implements dci.Context {
 
     ///// Roles ///////////////////////////////////////////////////
 
-    @role var SNAKE : {
+    @role final SNAKE : {
         final segments : ImmutableArray<Coordinate>;
 
         public function checkForFruitCollision() {
@@ -47,8 +47,8 @@ class Collisions implements dci.Context {
         }
 
         public function checkForCollisionWithItself() : Bool {
-            var head = SELF.segments[0];
-            var body = SELF.segments.shift();
+            final head = SELF.segments[0];
+            final body = SELF.segments.shift();
 
             return body.exists(seg -> collides(seg, head));
         }
@@ -59,7 +59,7 @@ class Collisions implements dci.Context {
 
         public function addSegment(fruitPos : Coordinate, score : Int) {
             // Append a copy of the last segment to the segments
-            var newSegments = SELF.segments.push(SELF.segments[SELF.segments.length-1]);
+            final newSegments = SELF.segments.push(SELF.segments[SELF.segments.length-1]);
 
             // Calculate how many moves player have to move to the next fruit
             final moveTime = new Scoring(SNAKE.segments, SNAKE.segments[0], fruitPos, _asset.state.playfield).allowedMovesUntilScoreDecrease();
@@ -74,15 +74,15 @@ class Collisions implements dci.Context {
         }
     }
 
-    @role var FRUIT : {
+    @role final FRUIT : {
         final x : Int;
         final y : Int;
 
         public function moveToRandomLocation() {
             var newPos : Coordinate;
             do {
-                var newX = Std.random(_asset.state.playfield.width);
-                var newY = Std.random(_asset.state.playfield.height);
+                final newX = Std.random(_asset.state.playfield.width);
+                final newY = Std.random(_asset.state.playfield.height);
                 newPos = {x : newX, y : newY};
             } while(SNAKE.collidesWith(newPos));
 
@@ -90,7 +90,7 @@ class Collisions implements dci.Context {
         }
     }
 
-    @role var GAME : {
+    @role final GAME : {
         final score : Int;
 
         public function increaseScore(newFruitPos : Coordinate) {

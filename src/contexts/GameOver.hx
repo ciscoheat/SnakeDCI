@@ -34,7 +34,7 @@ class GameOver implements dci.Context {
 
     ///// Roles ///////////////////////////////////////////////////
 
-    @role var CONTROLLER : {
+    @role final CONTROLLER : {
         var keyboard : Keyboard;
 
         public function waitForRestart() {
@@ -44,7 +44,7 @@ class GameOver implements dci.Context {
         }
     }
 
-    @role var GAME : {
+    @role final GAME : {
         final score : Int;
         final hiScore : Int;
 
@@ -60,7 +60,7 @@ class GameOver implements dci.Context {
         }
     }
 
-    @role var SCREEN : {
+    @role final SCREEN : {
         var height : Float;
         var width : Float;
         var add : GameObjectFactory;

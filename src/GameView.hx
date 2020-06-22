@@ -19,7 +19,7 @@ class GameView implements dci.Context {
         this._segmentPixelSize = segmentPixelSize;
         this._logger = logger;
 
-        var playfield = _asset.state.playfield;
+        final playfield = _asset.state.playfield;
 
         _game.state.add('Game', {
             preload: this.preload,
@@ -49,22 +49,22 @@ class GameView implements dci.Context {
         final textures = _textures.sure();
 
         ///// Playfield /////
-        var playfield = {
+        final playfield = {
             _game.add.tileSprite(0, 0, 
                 Math.max(playfieldWidth, _game.width), 
                 Math.max(playfieldHeight, _game.height), 
                 textures.background
             );
 
-            var scrollWidth = playfieldWidth > _game.width;
-            var scrollHeight = playfieldHeight > _game.height;
+            final scrollWidth = playfieldWidth > _game.width;
+            final scrollHeight = playfieldHeight > _game.height;
 
             // Create the border before the playfield,
             // so it displays below the field.
-            var playfieldBorder = {
-                var widthOffset = scrollWidth ? -2 : 2;
-                var heightOffset = scrollHeight ? -2 : 2;
-                var border = _game.make.graphics();
+            final playfieldBorder = {
+                final widthOffset = scrollWidth ? -2 : 2;
+                final heightOffset = scrollHeight ? -2 : 2;
+                final border = _game.make.graphics();
                 border.lineStyle(2, 0xCCCCCC, 1);
                 border.beginFill(0x111111, 0.85);
                 border.drawRect(0,0, playfieldWidth+widthOffset,playfieldHeight+heightOffset);
@@ -73,7 +73,7 @@ class GameView implements dci.Context {
             }
 
             // Position playfield and its border on the screen
-            var group = _game.add.group();
+            final group = _game.add.group();
 
             group.x = scrollWidth ? 0 : (_game.world.width - playfieldWidth) / 2;
             group.y = scrollHeight ? 0 : (_game.world.height - playfieldWidth) / 2;
@@ -88,7 +88,7 @@ class GameView implements dci.Context {
             group;
         }
 
-        var state = _asset.state;
+        final state = _asset.state;
 
         ///// Score and keyboard /////
         {
@@ -100,7 +100,7 @@ class GameView implements dci.Context {
                 boundsAlignV: 'top',
             });
 
-            var highScore = state.hiScore;
+            final highScore = state.hiScore;
             this.HISCORE = _game.add.text(0, 0, "Hi-score: " + highScore, cast {
                 font: "20px Arial",
                 fill: "#ffffff",
@@ -111,11 +111,11 @@ class GameView implements dci.Context {
         }
 
         ///// Fruit and snake /////
-        var fruit : Sprite = playfield.create(0, 0, _textures.sure().fruit);
+        final fruit : Sprite = playfield.create(0, 0, _textures.sure().fruit);
 
         // Create fruit spinning effect
         fruit.anchor = new pixi.Point(0.5, 0.5);
-        var tween = _game.add.tween(fruit).to({angle: 360}, 550, "Linear", true, 1000).repeat(-1, 1000);
+        final tween = _game.add.tween(fruit).to({angle: 360}, 550, "Linear", true, 1000).repeat(-1, 1000);
         _tweens.push(tween);
 
         // Bind roles
@@ -123,21 +123,21 @@ class GameView implements dci.Context {
         this.SNAKE = playfield.add(_game.add.group());
 
         // Create initial segments of snake
-        var startSegments = {
-            var X = Std.int(state.playfield.width / 2);
-            var Y = Std.int(state.playfield.height / 2);
+        final startSegments = {
+            final X = Std.int(state.playfield.width / 2);
+            final Y = Std.int(state.playfield.height / 2);
 
             [{x: X, y: Y}, {x: X-1, y: Y}, {x: X-2, y: Y}];
         }
 
-        var fruitStartPos : Coordinate = {
+        final fruitStartPos : Coordinate = {
             x: Std.int(Std.random(state.playfield.width)), 
             y: Std.int(Std.random(state.playfield.height))
         };
 
         // Load hi-score (saved in GameOver)
-        var hi = js.Browser.window.localStorage.getItem("hiScore");
-        var hiScore = Std.parseInt(hi);
+        final hi = js.Browser.window.localStorage.getItem("hiScore");
+        final hiScore = Std.parseInt(hi);
 
         _asset = _asset.update(
             state.snake = {
@@ -160,7 +160,7 @@ class GameView implements dci.Context {
     //////////////////////////\ \ \
 
     function update() {
-        var state = _asset.state;
+        final state = _asset.state;
 
         SNAKE.display(state.snake.segments);
         FRUIT.display(state.fruit);
@@ -169,8 +169,8 @@ class GameView implements dci.Context {
 
         // Debugging: Display state on screen
         /*{
-            var debugState = _asset.update(_asset.state.snake.segments = []);
-            _game.debug.start(20, 45, 'white'); for(line in Std.string(debugState).split("\n")) _game.debug.line(line);
+            final debugState = _asset.update(_asset.state.snake.segments = []);
+            _game.debug.start(20, 45, 'white'); for(line in Std.string(debugState.state).split("\n")) _game.debug.line(line);
         }*/
 
         // If Game Over, disable all contexts.
@@ -198,7 +198,8 @@ class GameView implements dci.Context {
 
     ///// Roles /////////////////////////////////////////////////////
 
-    @:nullSafety(Off) @role var FRUIT : {
+    @:nullSafety(Off)
+    @role var FRUIT : {
         var x : Float;
         var y : Float;
 
@@ -211,7 +212,8 @@ class GameView implements dci.Context {
         }
     }
 
-    @:nullSafety(Off) @role var SNAKE : {
+    @:nullSafety(Off)
+    @role var SNAKE : {
         function addChild(child : pixi.DisplayObject) : Void;
         function removeChildAt(index : Int) : Void;
         function xy(index : Int, x : Float, y : Float) : Void;
@@ -244,7 +246,8 @@ class GameView implements dci.Context {
         }
     }
 
-    @:nullSafety(Off) @role var SCORE : {
+    @:nullSafety(Off)
+    @role var SCORE : {
         function setText(text : String, immediate : Bool) : Void;
 
         public function display(score : Int) {
@@ -252,7 +255,8 @@ class GameView implements dci.Context {
         }
     }
 
-    @:nullSafety(Off) @role var HISCORE : {
+    @:nullSafety(Off)
+    @role var HISCORE : {
         function setText(text : String, immediate : Bool) : Void;
 
         public function display(hiscore : Int) {
@@ -274,25 +278,25 @@ private class Textures {
 
     public function new(game : Game, segmentSize : Float) {
 
-        var head : Graphics = game.make.graphics();
+        final head : Graphics = game.make.graphics();
         head.lineStyle(1, 0xFFFFFF, 1);
         head.beginFill(0xCF500B, 1);
         head.drawRect(0,0, segmentSize-1,segmentSize-1);
         head.endFill();
 
-        var segment : Graphics = game.make.graphics();
+        final segment : Graphics = game.make.graphics();
         segment.lineStyle(1, 0xFFFFFF, 1);
         segment.beginFill(0xFF700B, 1);
         segment.drawRect(0,0, segmentSize-1,segmentSize-1);
         segment.endFill();
 
-        var fruit : Graphics = game.make.graphics();
+        final fruit : Graphics = game.make.graphics();
         fruit.lineStyle(1, 0xFF2233, 1);
         fruit.beginFill(0xFF3344, 1);
         fruit.drawRect(0,0, segmentSize-4,segmentSize-4);
         fruit.endFill();
 
-        var background = 'background';
+        final background = 'background';
         game.load.image(background, 'assets/connectwork.png');
 
         this.head = head.generateTexture();

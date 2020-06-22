@@ -24,9 +24,9 @@ class Controlling implements dci.Context {
 
     ///// Roles /////////////////////////////////////////////////////
 
-    @role var SNAKE : {
+    @role final SNAKE : {
         public function checkDirection() {
-            var wantedDirection = CONTROLLER.direction();
+            final wantedDirection = CONTROLLER.direction();
             return wantedDirection == 0 
                 ? _asset
                 : _asset.update(_asset.state.snake.wantedDirection = wantedDirection);
@@ -34,7 +34,7 @@ class Controlling implements dci.Context {
     }
 
     // TODO: A more precise input method with buffering
-    @role var CONTROLLER : {
+    @role final CONTROLLER : {
         var left(default, never) : {var isDown : Bool;};
         var right(default, never) : {var isDown : Bool;};
         var up(default, never) : {var isDown : Bool;};

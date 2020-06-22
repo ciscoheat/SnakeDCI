@@ -27,7 +27,7 @@ typedef State = {
 class GameState implements HaxeContracts {
 
     public static function validate(asset : DeepState<State>) {
-        var state = asset.state;
+        final state = asset.state;
 
         Contract.requires(
             state.fruit.x >= 0 && state.fruit.x < state.playfield.width &&

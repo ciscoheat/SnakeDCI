@@ -17,7 +17,7 @@ class Movement implements dci.Context {
     ///// System operations ///////////////////////////////////////
 
     public function move(msElapsed : Float) {
-        var movementTime = _asset.state.snake.nextMoveTime - msElapsed;
+        final movementTime = _asset.state.snake.nextMoveTime - msElapsed;
 
         return if(movementTime <= 0)
             HEAD.moveOneStepAhead(movementTime);
@@ -40,12 +40,12 @@ class Movement implements dci.Context {
 
     ///// Roles ///////////////////////////////////////////////////
 
-    @role var PLAYFIELD : {
+    @role final PLAYFIELD : {
         public final width : Int;
         public final height : Int;    
     }
 
-    @role var SNAKE : {
+    @role final SNAKE : {
         final currentDirection : Float;
         final wantedDirection : Float;
         final segments : ImmutableArray<Coordinate>;
@@ -54,11 +54,11 @@ class Movement implements dci.Context {
         public function moveTo(x : Int, y : Int, newDir : Float, timerDelta : Float) {
 
             // Remove last segment and add a new one in the front position.
-            var newPos = SELF.segments.pop().unshift({x: x, y: y});
-            var speedMs = SELF.moveSpeed(newPos.length) + timerDelta;
-            var moveCounter = _asset.state.snake.moveCounter - 1;
+            final newPos = SELF.segments.pop().unshift({x: x, y: y});
+            final speedMs = SELF.moveSpeed(newPos.length) + timerDelta;
+            final moveCounter = _asset.state.snake.moveCounter - 1;
 
-            var scoreDecrease = _asset.state.score - if(moveCounter >= 0) 0 
+            final scoreDecrease = _asset.state.score - if(moveCounter >= 0) 0 
             else new Scoring(SELF.segments, HEAD, _asset.state.fruit, _asset.state.playfield).scoreDecrease(-moveCounter, _asset.state.score);
 
             return _asset.update(
@@ -90,7 +90,7 @@ class Movement implements dci.Context {
         }
     }
 
-    @role var HEAD : {
+    @role final HEAD : {
         final x : Int;
         final y : Int;
 
@@ -99,7 +99,7 @@ class Movement implements dci.Context {
             var nextX = x, nextY = y;
 
             // Change position of head
-            var moveDir = SNAKE.moveDirection();
+            final moveDir = SNAKE.moveDirection();
 
                  if(moveDir == Phaser.UP)    nextY = y - 1;
             else if(moveDir == Phaser.DOWN)  nextY = y + 1;

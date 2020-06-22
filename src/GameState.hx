@@ -12,6 +12,7 @@ typedef State = {
         final nextMoveTime : Float;
         final currentDirection : Float;
         final wantedDirection : Float;
+        final moveCounter : Int;
     };
     final fruit : Coordinate;
     final score : Int;

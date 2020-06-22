@@ -56,13 +56,22 @@ class Movement implements dci.Context {
             // Remove last segment and add a new one in the front position.
             var newPos = SELF.segments.pop().unshift({x: x, y: y});
             var speedMs = SELF.moveSpeed(newPos.length) + timerDelta;
+            var moveCounter = _asset.state.snake.moveCounter - 1;
 
-            return _asset.update(_asset.state.snake = {
-                segments: newPos,
-                nextMoveTime: speedMs,
-                currentDirection: newDir,
-                wantedDirection: newDir
-            });
+            var scoreDecrease = _asset.state.score - if(moveCounter >= 0) 0 
+            else new Scoring(SELF.segments, HEAD, _asset.state.fruit, _asset.state.playfield).scoreDecrease(-moveCounter, _asset.state.score);
+
+            return _asset.update(
+                _asset.state.snake = {
+                    segments: newPos,
+                    nextMoveTime: speedMs,
+                    currentDirection: newDir,
+                    wantedDirection: newDir,
+                    moveCounter: moveCounter
+                },
+                _asset.state.score = scoreDecrease,
+                "SNAKE.moveTo"
+            );
         }
 
         public function moveDirection() : Float {

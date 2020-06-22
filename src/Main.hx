@@ -11,7 +11,8 @@ class Main implements dci.Context {
                 segments: [],
                 nextMoveTime: 0,
                 currentDirection: Phaser.RIGHT,
-                wantedDirection: Phaser.RIGHT
+                wantedDirection: Phaser.RIGHT,
+                moveCounter: 10000
             },
             fruit: {x: 0, y: 0},
             score: 0,
@@ -56,7 +57,7 @@ class MiddlewareLog<T> {
 
         // Log it and return it unchanged
         logs.push({state: newState.state, type: action.type, timestamp: Date.now()});
-        if(action.type.indexOf("updateMoveTimer") == -1) trace(action.type);
+        //if(action.type.indexOf("updateMoveTimer") == -1) trace(action.type);
         return newState;
     }
 }

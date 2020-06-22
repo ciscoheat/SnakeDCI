@@ -61,10 +61,15 @@ class Collisions implements dci.Context {
             // Append a copy of the last segment to the segments
             var newSegments = SELF.segments.push(SELF.segments[SELF.segments.length-1]);
 
+            // Calculate how many moves player have to move to the next fruit
+            final moveTime = new Scoring(SNAKE.segments, SNAKE.segments[0], fruitPos, _asset.state.playfield).allowedMovesUntilScoreDecrease();
+
             return _asset.update(
                 _asset.state.score = score,
                 _asset.state.fruit = fruitPos,
-                _asset.state.snake.segments = newSegments
+                _asset.state.snake.segments = newSegments,
+                _asset.state.snake.moveCounter = moveTime,
+                "SNAKE.addSegment"
             );
         }
     }

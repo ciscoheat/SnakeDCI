@@ -144,12 +144,14 @@ class GameView implements dci.Context {
                 segments: startSegments,
                 nextMoveTime: 0.0,
                 currentDirection: Phaser.RIGHT,
-                wantedDirection: Phaser.RIGHT
+                wantedDirection: Phaser.RIGHT,
+                moveCounter : 10000
             },
             state.score = 0,
             state.hiScore = hiScore == null ? 0 : hiScore,
             state.fruit = fruitStartPos,
-            state.active = true
+            state.active = true,
+            "InitialState"
         );
     }
 
@@ -165,7 +167,11 @@ class GameView implements dci.Context {
         SCORE.display(state.score);
         HISCORE.display(state.hiScore);
 
-        //_game.debug.start(20, 45, 'white'); for(line in Std.string(state).split("\n")) _game.debug.line(line);
+        // Debugging: Display state on screen
+        /*{
+            var debugState = _asset.update(_asset.state.snake.segments = []);
+            _game.debug.start(20, 45, 'white'); for(line in Std.string(debugState).split("\n")) _game.debug.line(line);
+        }*/
 
         // If Game Over, disable all contexts.
         if(state.active) {
